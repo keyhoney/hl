@@ -15,85 +15,454 @@ $\overline{AB} = \overline{BC}$이고 삼각형 $AOC$의 넓이가 $8$일 때, $
 $\triangle AOC$에서 $A$와 $C$는 같은 $x=t$ 위에 있으므로 밑변 $\overline{AC}$, 높이 $\overline{OB}=t$로 넓이를 구할 수 있어요.
 
 
-## 풀이
-곡선 $y=a^{x}-2$의 점근선은 $y=-2$입니다. 점 $B$의 $x$좌표를 $t$라 하면
+## 풀이: 좌표를 설정하는 정석 풀이
+**좌표를 설정하는 정석 풀이**
 
+### 공통 설정
 
+지수함수
 
 $$
-A(t,a^{t}-2),\quad B(t,0),\quad C(t,-2)
+y=a^{x}-2
 $$
 
+의 점근선은
 
+$$
+y=-2
+$$
 
-### $\overline{AB}=\overline{BC}$
+예요. 점 $A$를
 
-제$1$사분면의 점 $A$이므로 $a^{t}>2$입니다.
+$$
+A=(p,q)
+$$
 
+라고 하면 $A$는 제1사분면에 있으므로
 
+$$
+p>0,\quad q>0
+$$
+
+이에요. 점 $A$를 지나고 $y$축에 평행한 직선은 $x=p$이므로
+
+$$
+B=(p,0),\quad C=(p,-2)
+$$
+
+이고, 세 점은 위에서부터 $A$, $B$, $C$ 순서로 놓여 있어요.
+
+### 1단계: $\overline{AB}=\overline{BC}$ 이용하기
+
+$$
+B=(p,0),\quad C=(p,-2)
+$$
+
+이므로
+
+$$
+\overline{BC}=0-(-2)=2
+$$
+
+예요. 조건 $\overline{AB}=\overline{BC}$에 따라
+
+$$
+\overline{AB}=2
+$$
+
+이고, $A=(p,q)$와 $B=(p,0)$ 사이의 거리는 $q$이므로
+
+$$
+q=2
+$$
+
+예요. 따라서
+
+$$
+A=(p,2)
+$$
+
+이고, 세 점은
+
+$$
+A=(p,2),\quad B=(p,0),\quad C=(p,-2)
+$$
+
+가 돼요.
+
+### 2단계: 점 $A$가 곡선 위에 있다는 조건
+
+점 $A=(p,2)$가 곡선
+
+$$
+y=a^{x}-2
+$$
+
+위에 있으므로
+
+$$
+2=a^{p}-2
+$$
+
+이고, 따라서
+
+$$
+a^{p}=4 \tag{1}
+$$
+
+이에요.
+
+### 3단계: 삼각형 $AOC$의 넓이 이용하기
+
+선분 $AC$의 길이는
+
+$$
+\overline{AC}=\overline{AB}+\overline{BC}=2+2=4
+$$
+
+이고, 선분 $AC$가 놓인 직선은 $x=p$예요. 원점 $O=(0,0)$에서 직선 $x=p$까지의 거리는 $p$이므로 삼각형 $AOC$의 넓이는
+
+$$
+\frac{1}{2}\times\overline{AC}\times p=8
+$$
+
+이에요. 즉,
+
+$$
+\frac{1}{2}\times4\times p=8,\quad 2p=8
+$$
+
+이므로
+
+$$
+p=4
+$$
+
+이고, 따라서
+
+$$
+\overline{OB}=p=4
+$$
+
+예요.
+
+### 4단계: $a$ 구하기
+
+식 (1)에 $p=4$를 대입하면
+
+$$
+a^{4}=4
+$$
+
+이고 $a>1$이므로
+
+$$
+a=4^{\frac{1}{4}}=2^{\frac{1}{2}}=\sqrt{2}
+$$
+
+예요. 따라서
 
 $$
 \begin{aligned}
-\overline{AB}&=a^{t}-2 \\
-\overline{BC}&=2
+a\times\overline{OB} &= \sqrt{2}\times4 \\
+&= 2^{\frac{1}{2}}\times2^{2} \\
+&= 2^{\frac{5}{2}}
 \end{aligned}
 $$
 
+이므로 $\boxed{2^{\frac{5}{2}}}$예요.
 
 
-$\overline{AB}=\overline{BC}$이므로 $a^{t}-2=2$, 즉 $a^{t}=4$입니다. 따라서
+## 풀이: $B$의 좌표 하나만 잡는 빠른 풀이
+**$B$의 좌표 하나만 잡는 빠른 풀이**
 
-
+점 $B$를
 
 $$
-\overline{AC}=a^{t}=4
+B=(t,0)
 $$
 
+이라고 하면, 점 $C$는 점근선 $y=-2$ 위에 있으므로
+
+$$
+C=(t,-2)
+$$
+
+예요. 따라서
+
+$$
+\overline{BC}=2
+$$
+
+이고, 조건 $\overline{AB}=\overline{BC}$에 따라
+
+$$
+\overline{AB}=2
+$$
+
+이에요. $A$는 $B$의 위쪽에 있으므로
+
+$$
+A=(t,2)
+$$
+
+이고, 결국
+
+$$
+\overline{AC}=4
+$$
+
+예요.
+
+삼각형 $AOC$에서 $AC$를 밑변으로 보면 높이는 원점에서 직선 $x=t$까지의 거리인 $t$이므로
+
+$$
+\frac{1}{2}\cdot4\cdot t=8
+$$
+
+이에요. 따라서
+
+$$
+t=4
+$$
+
+이고,
+
+$$
+\overline{OB}=4
+$$
+
+예요.
+
+한편 $A=(4,2)$가 곡선 위에 있으므로
+
+$$
+2=a^{4}-2,\quad a^{4}=4,\quad a=\sqrt{2}
+$$
+
+이고, 따라서
+
+$$
+a\cdot\overline{OB}=\sqrt{2}\cdot4=2^{\frac{5}{2}}
+$$
+
+이므로 $\boxed{2^{\frac{5}{2}}}$예요.
+
+**이 풀이의 장점**
+
+점을 전부 문자로 나타내지 않고, $B$의 $x$좌표 하나만 $t$로 잡아 계산량을 줄였어요.
 
 
-### $\triangle AOC$의 넓이
+## 풀이: 중점 관계를 이용한 풀이
+**중점 관계를 이용한 풀이**
 
-$\overline{OB}=t$이므로
+조건
+
+$$
+\overline{AB}=\overline{BC}
+$$
+
+이고 $A$, $B$, $C$가 일직선 위에 있으며 $B$가 $A$와 $C$ 사이에 있으므로, $B$는 선분 $AC$의 중점이에요.
+
+점 $B$는 $x$축 위에 있으므로 $y$좌표가 $0$이고, 점 $C$는 점근선 $y=-2$ 위에 있으므로 $y$좌표가 $-2$예요. $B$가 $AC$의 중점이므로
+
+$$
+0=\frac{y_{A}+(-2)}{2}
+$$
+
+이고, 따라서
+
+$$
+y_{A}=2
+$$
+
+예요. 즉,
+
+$$
+A=(t,2),\quad B=(t,0),\quad C=(t,-2)
+$$
+
+이고, 그러므로
+
+$$
+\overline{AC}=2-(-2)=4
+$$
+
+예요.
+
+삼각형 $AOC$의 넓이가 $8$이므로
+
+$$
+8=\frac{1}{2}\times4\times t
+$$
+
+이고, 따라서
+
+$$
+t=4,\quad \overline{OB}=4
+$$
+
+예요.
+
+점 $A=(4,2)$가 곡선 위에 있으므로
+
+$$
+2=a^{4}-2,\quad a^{4}=4,\quad a=\sqrt{2}
+$$
+
+이고, 따라서
+
+$$
+a\cdot\overline{OB}=4\sqrt{2}=2^{\frac{5}{2}}
+$$
+
+이므로 $\boxed{2^{\frac{5}{2}}}$예요.
+
+**이 풀이의 핵심**
+
+$\overline{AB}=\overline{BC}$를 단순히 길이 조건으로 계산하지 않고, "$B$가 선분 $AC$의 중점이다"라고 해석한 풀이예요.
 
 
+## 풀이: 좌표 넓이 공식을 이용한 풀이
+**좌표 넓이 공식을 이용한 풀이**
+
+점을 다음과 같이 놓아요.
+
+$$
+A=(t,2),\quad O=(0,0),\quad C=(t,-2)
+$$
+
+좌표로 주어진 삼각형의 넓이는 행렬식 공식으로 구할 수 있어요.
+
+$$
+[\triangle AOC]=\frac{1}{2}\left|x_{A}y_{O}+x_{O}y_{C}+x_{C}y_{A}-y_{A}x_{O}-y_{O}x_{C}-y_{C}x_{A}\right|
+$$
+
+각 좌표를 대입하면
 
 $$
 \begin{aligned}
-\triangle AOC
-&=\frac{1}{2}\times \overline{AC}\times \overline{OB} \\
-&=\frac{1}{2}\times 4\times t \\
-&=2t
+[\triangle AOC] &= \frac{1}{2}\left|t\cdot0+0\cdot(-2)+t\cdot2-2\cdot0-0\cdot t-(-2)\cdot t\right| \\
+&= \frac{1}{2}\left|2t+2t\right| \\
+&= 2t
 \end{aligned}
 $$
 
+이에요. 넓이가 $8$이므로
+
+$$
+2t=8,\quad t=4
+$$
+
+예요. 나머지는 동일해요.
+
+$$
+a^{4}-2=2,\quad a^{4}=4,\quad a=\sqrt{2}
+$$
+
+이고, 따라서
+
+$$
+a\cdot\overline{OB}=\sqrt{2}\cdot4=2^{\frac{5}{2}}
+$$
+
+이므로 $\boxed{2^{\frac{5}{2}}}$예요.
+
+**언제 유용한가?**
+
+밑변과 높이가 바로 보이지 않을 때는 좌표 넓이 공식을 사용할 수 있어요. 다만 이 문제에서는 $AC$가 세로선분이므로 밑변과 높이를 이용하는 것이 더 빨라요.
 
 
-넓이가 $8$이므로 $2t=8$, 즉 $t=4$입니다. $a^{4}=4$에서
+## 풀이: 삼각형을 두 개로 나누는 풀이
+**삼각형을 두 개로 나누는 풀이**
+
+삼각형 $AOC$를 선분 $OB$로 나누면
+
+$$
+\triangle AOC=\triangle AOB+\triangle BOC
+$$
+
+예요. $\overline{AB}=\overline{BC}=2$이고 두 삼각형의 높이는 모두 $\overline{OB}$이므로
+
+$$
+[\triangle AOB]=\frac{1}{2}\cdot\overline{AB}\cdot\overline{OB}=\frac{1}{2}\cdot2\cdot\overline{OB}=\overline{OB}
+$$
+
+이고,
+
+$$
+[\triangle BOC]=\frac{1}{2}\cdot\overline{BC}\cdot\overline{OB}=\frac{1}{2}\cdot2\cdot\overline{OB}=\overline{OB}
+$$
+
+예요. 그러므로
+
+$$
+[\triangle AOC]=2\overline{OB}
+$$
+
+이고, 넓이가 $8$이므로
+
+$$
+2\overline{OB}=8,\quad \overline{OB}=4
+$$
+
+예요.
+
+또 $A=(4,2)$이므로
+
+$$
+2=a^{4}-2
+$$
+
+이고, 따라서
+
+$$
+a=\sqrt{2}
+$$
+
+예요. 결국
+
+$$
+a\cdot\overline{OB}=\sqrt{2}\cdot4=2^{\frac{5}{2}}
+$$
+
+이므로 $\boxed{2^{\frac{5}{2}}}$예요.
+
+**이 풀이의 장점**
+
+$\overline{AB}=\overline{BC}$이므로 두 삼각형 $\triangle AOB$, $\triangle BOC$는 밑변의 길이도 같고 높이도 같아요. 따라서 두 삼각형의 넓이가 같다는 것을 자연스럽게 활용할 수 있어요.
 
 
+## 풀이: $a$를 직접 구하지 않는 지수법칙 풀이
+**$a$를 직접 구하지 않는 지수법칙 풀이**
+
+앞부분에서
+
+$$
+\overline{OB}=4,\quad a^{4}=4
+$$
+
+를 얻어요. 구하려는 값은
+
+$$
+a\cdot\overline{OB}=4a
+$$
+
+이고, $a^{4}=4$이므로
+
+$$
+a=4^{\frac{1}{4}}
+$$
+
+예요. 따라서
 
 $$
 \begin{aligned}
-a&=4^{\frac{1}{4}} \\
-&=2^{\frac{1}{2}}
+4a &= 4\cdot4^{\frac{1}{4}} \\
+&= 4^{\frac{5}{4}} \\
+&= \left(2^{2}\right)^{\frac{5}{4}} \\
+&= 2^{\frac{5}{2}}
 \end{aligned}
 $$
 
-
-
-따라서
-
-
-
-$$
-\begin{aligned}
-a\times \overline{OB}
-&=2^{\frac{1}{2}}\times 4 \\
-&=2^{\frac{1}{2}}\times 2^{2} \\
-&=2^{\frac{5}{2}}
-\end{aligned}
-$$
-
-
-
-따라서 정답은 **③**예요.
+이므로 $\boxed{2^{\frac{5}{2}}}$예요. 즉, 굳이 $a=\sqrt{2}$를 먼저 쓰지 않아도 돼요.
