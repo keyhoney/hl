@@ -1,0 +1,279 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const categories = [
+  { value: '오류제보', label: '해설 오타 및 계산식 오류 제보' },
+  { value: '문항추천', label: '새로운 실전 숏컷 및 대안 해법 제안' },
+  { value: '콘텐츠의견', label: '추가 희망 4점 기출 문항 요청' },
+  { value: '기타', label: '사이트 개선 및 기타 문의' },
+];
+
+const faqs = [
+  {
+    q: 'Q. 실전 숏컷 풀이만 공부해도 되나요?',
+    a: '권장하지 않습니다. 정석 풀이로 수학적 원리를 완전히 이해한 뒤 숏컷을 적용해야 조건 변형에 대처할 수 있습니다.',
+  },
+  {
+    q: 'Q. 콘텐츠는 앞으로도 계속 무료인가요?',
+    a: '네, HowLearn의 모든 4점 해법과 기출 분석 아카이브는 공교육 및 학생들의 자율 학습을 위해 100% 무료로 개방됩니다.',
+  },
+  {
+    q: 'Q. 다른 학년도 기출은 언제 올라오나요?',
+    a: '최근 주요 문항을 시작으로, 6월·9월 모의평가 및 대학수학능력시험 4점 문항도 정기 업데이트됩니다.',
+  },
+];
+---
+
+<BaseLayout
+  title="문의 및 풀이 오류 제보 | HowLearn"
+  description="수학적 수식 오타, 계산 오류, 새로운 대안 해법 제안 등 HowLearn 콘텐츠에 대한 제보와 문의를 접수합니다."
+>
+  <div class="max-w-4xl mx-auto space-y-12" data-contact>
+    {/* Header */}
+    <div class="border-b border-slate-200 pb-5">
+      <span class="text-xs font-bold text-indigo-600 uppercase tracking-wider">COMMUNICATION &amp; ERRATA</span>
+      <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight mt-1">
+        문의 및 풀이 오류 제보
+      </h1>
+      <p class="text-sm text-slate-500 mt-1">
+        수학적 수식 오타, 계산 오류, 새로운 대안 해법 제안 또는 사이트 관련 의견을 환영합니다.
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-5 gap-8">
+      {/* Left Form Area (3 cols) */}
+      <div class="md:col-span-3 space-y-6">
+        <div class="bg-white border border-slate-200 rounded-2xl p-6 sm:p-7 shadow-xs">
+          <h2 class="text-lg font-bold text-slate-900 mb-1">제보 및 피드백 접수</h2>
+          <p class="text-xs text-slate-500 mb-5">
+            접수된 제보 내용은 확인 후 문항 수정에 반영됩니다.
+          </p>
+
+          <div data-contact-error hidden role="alert" class="mb-4 rounded-lg border border-rose-200 bg-rose-50 px-3.5 py-3 text-xs leading-relaxed text-rose-700"></div>
+
+          <div data-contact-form-panel>
+            <form
+              data-contact-form
+              action="https://formspree.io/f/xkoqbyvv"
+              method="POST"
+              class="space-y-4 text-xs sm:text-sm"
+            >
+              <input type="hidden" name="_subject" value="HowLearn 문의 및 제보" />
+              <input type="hidden" name="_language" value="ko" />
+              <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" class="hidden" aria-hidden="true" />
+
+              {/* Category select */}
+              <div>
+                <label for="category-select" class="block text-xs font-bold text-slate-700 mb-1">
+                  제보 유형 <span class="text-rose-500">*</span>
+                </label>
+                <select
+                  id="category-select"
+                  name="category"
+                  class="w-full px-3.5 py-2.5 rounded-lg border border-slate-300 text-slate-800 focus:outline-hidden focus:ring-2 focus:ring-indigo-500 text-xs sm:text-sm"
+                >
+                  {categories.map((category) => (
+                    <option value={category.value}>{category.label}</option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Problem ID / Ref */}
+              <div>
+                <label for="problem-ref" class="block text-xs font-bold text-slate-700 mb-1">
+                  관련 문항 번호 / 시험명 (선택)
+                </label>
+                <input
+                  id="problem-ref"
+                  name="problemRef"
+                  type="text"
+                  placeholder="예: 2025학년도 22번, 미적분 30번"
+                  class="w-full px-3.5 py-2.5 rounded-lg border border-slate-300 text-slate-800 focus:outline-hidden focus:ring-2 focus:ring-indigo-500 text-xs sm:text-sm"
+                />
+              </div>
+
+              {/* Contact Email */}
+              <div>
+                <label for="author-email" class="block text-xs font-bold text-slate-700 mb-1">
+                  회신받으실 이메일 (선택)
+                </label>
+                <input
+                  id="author-email"
+                  name="email"
+                  type="email"
+                  autocomplete="email"
+                  placeholder="답변이 필요하신 경우에만 입력하세요"
+                  class="w-full px-3.5 py-2.5 rounded-lg border border-slate-300 text-slate-800 focus:outline-hidden focus:ring-2 focus:ring-indigo-500 text-xs sm:text-sm"
+                />
+              </div>
+
+              {/* Detailed Message */}
+              <div>
+                <label for="message-body" class="block text-xs font-bold text-slate-700 mb-1">
+                  상세 내용 <span class="text-rose-500">*</span>
+                </label>
+                <textarea
+                  id="message-body"
+                  name="message"
+                  required
+                  rows="5"
+                  placeholder="오류가 발생한 해법의 단계, 수정 제안 수식, 또는 의견을 자유롭게 적어주세요."
+                  class="w-full px-3.5 py-2.5 rounded-lg border border-slate-300 text-slate-800 focus:outline-hidden focus:ring-2 focus:ring-indigo-500 text-xs sm:text-sm"
+                ></textarea>
+              </div>
+
+              {/* Submit button */}
+              <div class="pt-2">
+                <button
+                  type="submit"
+                  data-contact-submit
+                  class="w-full py-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 disabled:opacity-70 disabled:cursor-wait text-white font-bold text-sm shadow-xs transition-colors"
+                >
+                  제보 내용 접수하기
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <div data-contact-success hidden role="status" aria-live="polite" class="bg-emerald-50 border border-emerald-200 rounded-xl p-6 text-center space-y-3">
+            <div class="w-10 h-10 mx-auto rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center font-bold text-lg">
+              ✓
+            </div>
+            <h3 class="text-base font-bold text-emerald-900">
+              제보가 성공적으로 접수되었습니다!
+            </h3>
+            <p class="text-xs text-emerald-800 leading-relaxed max-w-sm mx-auto">
+              HowLearn의 질적 향상에 기여해 주셔서 감사드립니다. 확인 후 필요한 경우 문항 해설을 보완하겠습니다.
+            </p>
+            <div class="pt-2">
+              <button
+                type="button"
+                data-contact-reset
+                class="px-4 py-2 rounded-lg bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs transition-colors"
+              >
+                추가 제보 작성하기
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Right Info & FAQ Area (2 cols) */}
+      <div class="md:col-span-2 space-y-6">
+        {/* Editorial info box */}
+        <div class="bg-slate-50 border border-slate-200 rounded-2xl p-6 space-y-3">
+          <h3 class="font-bold text-slate-900 text-sm flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-indigo-600"></span>
+            검토 및 반영 프로세스
+          </h3>
+          <p class="text-xs text-slate-600 leading-relaxed">
+            접수된 의견은 내용을 확인한 후 필요한 경우 문항 해설을 보완합니다.
+          </p>
+          <div class="text-xs text-slate-500 pt-1 border-t border-slate-200">
+            <strong>문의 이메일:</strong> <a href="mailto:math@howlearn.kr" class="font-semibold text-indigo-600 hover:text-indigo-800 underline">math@howlearn.kr</a>
+          </div>
+        </div>
+
+        {/* Quick FAQ */}
+        <div class="bg-white border border-slate-200 rounded-2xl p-6 space-y-4">
+          <h3 class="font-bold text-slate-900 text-sm">자주 묻는 질문 (FAQ)</h3>
+
+          <div class="space-y-3 text-xs">
+            {faqs.map((faq, index) => (
+              <div class:list={['border-b border-slate-100 pb-2.5', index === faqs.length - 1 && 'border-b-0 pb-0']}>
+                <h4 class="font-bold text-slate-800">{faq.q}</h4>
+                <p class="text-slate-600 mt-1 leading-relaxed">{faq.a}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</BaseLayout>
+
+<script>
+  const root = document.querySelector<HTMLElement>('[data-contact]');
+
+  if (root) {
+    const form = root.querySelector<HTMLFormElement>('[data-contact-form]');
+    const formPanel = root.querySelector<HTMLElement>('[data-contact-form-panel]');
+    const successPanel = root.querySelector<HTMLElement>('[data-contact-success]');
+    const errorPanel = root.querySelector<HTMLElement>('[data-contact-error]');
+    const resetBtn = root.querySelector<HTMLButtonElement>('[data-contact-reset]');
+    const submitBtn = root.querySelector<HTMLButtonElement>('[data-contact-submit]');
+
+    const showSuccess = (show: boolean) => {
+      formPanel?.toggleAttribute('hidden', show);
+      successPanel?.toggleAttribute('hidden', !show);
+    };
+
+    const showError = (message: string) => {
+      if (!errorPanel) return;
+      errorPanel.textContent = message;
+      errorPanel.toggleAttribute('hidden', false);
+    };
+
+    const clearError = () => errorPanel?.toggleAttribute('hidden', true);
+
+    form?.addEventListener('submit', async (event) => {
+      event.preventDefault();
+
+      const message = form.querySelector<HTMLTextAreaElement>('#message-body');
+      if (!message || message.value.trim() === '') {
+        message?.focus();
+        return;
+      }
+
+      clearError();
+      form.setAttribute('aria-busy', 'true');
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.textContent = '전송 중...';
+      }
+
+      try {
+        const response = await fetch(form.action, {
+          method: 'POST',
+          body: new FormData(form),
+          headers: { Accept: 'application/json' },
+        });
+
+        if (!response.ok) {
+          const payload = (await response.json().catch(() => null)) as {
+            errors?: { message?: string }[];
+          } | null;
+          const detail = payload?.errors
+            ?.map((item) => item.message)
+            .filter(Boolean)
+            .join(' ');
+
+          showError(
+            detail ||
+              '제보 접수에 실패했습니다. 잠시 후 다시 시도하거나 math@howlearn.kr로 보내주세요.'
+          );
+          return;
+        }
+
+        form.reset();
+        showSuccess(true);
+      } catch {
+        showError(
+          '네트워크 오류로 제보를 전송하지 못했습니다. 잠시 후 다시 시도하거나 math@howlearn.kr로 보내주세요.'
+        );
+      } finally {
+        form.removeAttribute('aria-busy');
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.textContent = '제보 내용 접수하기';
+        }
+      }
+    });
+
+    resetBtn?.addEventListener('click', () => {
+      form?.reset();
+      clearError();
+      showSuccess(false);
+    });
+  }
+</script>

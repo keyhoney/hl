@@ -1,0 +1,68 @@
+@import "tailwindcss";
+
+@layer base {
+  body {
+    font-family: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, system-ui, Roboto, "Helvetica Neue", "Segoe UI", "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", sans-serif;
+    color: #1e293b;
+    background-color: #f8fafc;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+/* KaTeX custom sizing & scroll wrap for complex equations */
+.katex-display {
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 0.5rem 0;
+  margin: 0.75rem 0 !important;
+}
+
+.katex {
+  font-size: 1.05em;
+}
+
+/*
+ * Interactive-state styles.
+ * Astro ships almost no JavaScript, so tab/filter/selection state lives on
+ * `data-active` attributes that a tiny progressive-enhancement script toggles.
+ */
+@layer components {
+  /* Problem list filters */
+  .filter-btn {
+    @apply px-2.5 py-1 text-xs rounded-md font-medium transition-colors bg-slate-100 text-slate-600 hover:bg-slate-200;
+  }
+  .filter-btn[data-active="true"] {
+    @apply bg-indigo-600 text-white font-bold;
+  }
+
+  /* Solution tabs (problem detail) — 탭 전환 UI를 제거하고 모든 해법을 펼쳐 노출합니다. */
+
+  /* Year archive tabs */
+  .year-tab {
+    @apply px-5 py-3 rounded-xl border text-sm font-bold transition-all inline-flex items-center gap-2 bg-white border-slate-200 text-slate-700 hover:bg-slate-50;
+  }
+  .year-tab[data-active="true"] {
+    @apply bg-indigo-600 border-indigo-600 text-white shadow-sm;
+  }
+  .year-tab-badge {
+    @apply text-xs px-2 py-0.5 rounded-full bg-slate-100 text-slate-600;
+  }
+  .year-tab[data-active="true"] .year-tab-badge {
+    @apply bg-indigo-500 text-white;
+  }
+
+  /* Curriculum subject tabs */
+  .subject-tab {
+    @apply p-3.5 rounded-xl border text-left transition-all bg-white border-slate-200 text-slate-800 hover:border-slate-300;
+  }
+  .subject-tab[data-active="true"] {
+    @apply bg-indigo-600 border-indigo-600 text-white shadow-xs;
+  }
+  .subject-tab-count {
+    @apply text-xs mt-1 text-slate-500;
+  }
+  .subject-tab[data-active="true"] .subject-tab-count {
+    @apply text-indigo-100;
+  }
+}

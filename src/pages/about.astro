@@ -1,0 +1,492 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const stats = [
+  { value: '30', unit: '문항', label: '수능 수학 전체' },
+  { value: '13', unit: '문항', label: '4점 문항' },
+  { value: '52', unit: '점', label: '4점 문항 배점 합계' },
+];
+
+const capabilities = [
+  '문제의 조건을 수식과 구조로 해석하는 능력',
+  '정석적인 논리와 실전적인 접근을 구분하는 능력',
+  '계산량과 오류 가능성을 고려해 풀이를 선택하는 능력',
+  '정답을 보기 전에 스스로 다음 단계를 탐색하는 능력',
+];
+
+const methods = [
+  {
+    step: '01',
+    badge: '정석 풀이',
+    badgeClass: 'bg-indigo-50 text-indigo-700 border-indigo-200',
+    accent: 'bg-indigo-500',
+    title: '교육과정의 개념과 논리로 이해하기',
+    body: '교육과정의 개념과 논리에 따라 풀이 과정을 설명합니다. 답을 구하는 과정뿐 아니라 각 식이 성립하는 이유를 이해할 수 있도록 구성합니다.',
+    extra: '문항에 따라 서로 다른 개념이나 관점에서 접근하는 복수의 정석 풀이를 제공할 수 있습니다.',
+    flow: [],
+  },
+  {
+    step: '02',
+    badge: '실전 풀이',
+    badgeClass: 'bg-amber-50 text-amber-700 border-amber-200',
+    accent: 'bg-amber-500',
+    title: '계산 단계를 줄이는 접근',
+    body: '문항의 대칭성, 비율 관계, 그래프의 성질, 도형의 구조 등을 활용해 계산 단계를 줄일 수 있는 접근을 소개합니다.',
+    extra: '공식의 단순 암기를 지향하지 않습니다. 해당 접근을 사용할 수 있는 조건과 사용할 수 없는 경우를 함께 설명하는 것을 원칙으로 합니다.',
+    flow: [],
+  },
+  {
+    step: '03',
+    badge: '단계별 힌트',
+    badgeClass: 'bg-emerald-50 text-emerald-700 border-emerald-200',
+    accent: 'bg-emerald-500',
+    title: '정답을 보기 전에 스스로 탐색하기',
+    body: '정답이나 전체 풀이를 바로 확인하지 않고 스스로 문제를 해결할 수 있도록 단계별 힌트를 제공합니다.',
+    extra: '모든 문항에 단계별 힌트를 제공하는 것을 기본 원칙으로 합니다.',
+    flow: ['조건 확인', '개념 선택', '식의 구성', '계산 및 검토'],
+  },
+];
+
+const criteria = [
+  '교육과정의 핵심 개념을 충실하게 다루는가',
+  '하나 이상의 의미 있는 접근 방법을 비교할 수 있는가',
+  '조건 해석과 풀이 선택 과정을 학습하는 데 도움이 되는가',
+  '계산 과정에서 자주 발생하는 오류를 설명할 수 있는가',
+  '유사하거나 변형된 문제에 적용할 수 있는 학습 원리가 있는가',
+];
+
+const productionSteps = [
+  '기출문항과 교육과정 내용 확인',
+  '정석 풀이와 대안 풀이 작성',
+  '각 풀이의 수학적 타당성 검토',
+  '불필요한 계산이나 오개념 유발 가능성 점검',
+  '단계별 힌트 작성',
+  '최종 교정 후 게시',
+];
+
+const books = [
+  {
+    title: '공부를 잘하는 아이는 집에서 무엇이 다를까',
+    subtitle: '통제가 아닌 구조, 관리가 아닌 시스템',
+    isbn: '979-11-421-9317-0',
+  },
+  {
+    title: '수학 공부의 뇌',
+    subtitle: '뇌과학과 심리학이 밝혀낸 수학 공부 최적화 기술',
+    isbn: '979-11-421-9471-9',
+  },
+  {
+    title: 'AI 시대의 문제해결력',
+    subtitle: '정답을 빨리 찾는 사람이 아니라, 문제를 제대로 정의하는 사람이 살아남는다.',
+    isbn: '979-11-438-1043-4',
+  },
+];
+
+const sectionLinks = [
+  { href: '#why', label: '왜 비교하나요' },
+  { href: '#methods', label: '학습 방식' },
+  { href: '#criteria', label: '선정 기준' },
+  { href: '#process', label: '제작·검토' },
+  { href: '#operator', label: '운영자' },
+  { href: '#contact', label: '문의' },
+];
+---
+
+<BaseLayout
+  title="HowLearn 소개 | 수능 수학 4점 기출 학습 아카이브"
+  description="수능 수학 4점 기출문항을 정석 풀이·실전 풀이·단계별 힌트로 비교하는 HowLearn의 학습 방식, 콘텐츠 선정 기준, 제작·검토 과정과 운영자를 소개합니다."
+>
+  <div class="max-w-5xl mx-auto space-y-12 sm:space-y-16">
+    {/* Hero */}
+    <header class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-indigo-950 via-indigo-900 to-slate-900 px-6 py-9 sm:px-10 sm:py-12 text-white shadow-md">
+      <div class="relative z-10 max-w-3xl space-y-5">
+        <span class="inline-flex items-center gap-2 rounded-full border border-indigo-400/30 bg-indigo-500/20 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-indigo-200">
+          ABOUT HOWLEARN
+        </span>
+
+        <h1 class="text-3xl sm:text-4xl font-extrabold leading-tight tracking-tight">
+          하나의 수학 문제를<br />
+          <span class="text-indigo-300">여러 관점</span>에서 이해하는 학습 아카이브
+        </h1>
+
+        <div class="space-y-3 text-sm sm:text-base leading-relaxed text-slate-300">
+          <p>
+            HowLearn은 대학수학능력시험 수학 영역의 4점 기출문항을 중심으로,
+            한 문제를 여러 방법으로 분석하고 학습할 수 있도록 돕는 교육 콘텐츠 사이트입니다.
+          </p>
+          <p>
+            정답이나 풀이 과정을 그대로 암기하는 것보다, 문제의 조건이 무엇을 의미하는지 이해하고
+            상황에 맞는 접근 방법을 선택하는 힘을 기르는 데 목적을 두고 있습니다.
+          </p>
+        </div>
+
+        <div class="flex flex-wrap gap-2 pt-1">
+          {['KICE 기출 중심', '정석 · 실전 · 단계별 힌트', '수학 교사 운영'].map((item) => (
+            <span class="rounded-full border border-white/15 bg-white/5 px-2.5 py-1 text-[11px] font-semibold text-slate-300">
+              {item}
+            </span>
+          ))}
+        </div>
+      </div>
+
+      <div class="relative z-10 mt-8 grid grid-cols-3 gap-2 border-t border-white/10 pt-6 sm:gap-4">
+        {stats.map((stat) => (
+          <div>
+            <div class="flex items-baseline gap-1">
+              <span class="text-2xl sm:text-3xl font-extrabold tracking-tight text-white tabular-nums">{stat.value}</span>
+              <span class="text-[11px] font-bold text-indigo-300">{stat.unit}</span>
+            </div>
+            <p class="mt-1 text-[10px] sm:text-[11px] font-medium text-slate-400">{stat.label}</p>
+          </div>
+        ))}
+      </div>
+
+      <div aria-hidden="true" class="absolute -right-20 -top-24 h-72 w-72 rounded-full bg-indigo-500/20 blur-3xl"></div>
+      <div aria-hidden="true" class="absolute -bottom-28 right-10 h-64 w-64 rounded-full border border-white/10"></div>
+    </header>
+
+    {/* Section shortcut */}
+    <nav class="flex flex-wrap items-center gap-2" aria-label="페이지 목차">
+      {sectionLinks.map((link) => (
+        <a
+          href={link.href}
+          class="rounded-full border border-slate-200 bg-white px-3 py-1.5 text-[11px] font-semibold text-slate-600 hover:border-indigo-300 hover:text-indigo-700 transition-colors"
+        >
+          {link.label}
+        </a>
+      ))}
+    </nav>
+
+    {/* Why compare */}
+    <section id="why" class="scroll-mt-24 space-y-6">
+      <div class="max-w-3xl space-y-2">
+        <p class="text-[11px] font-bold uppercase tracking-wider text-indigo-600">WHY COMPARE</p>
+        <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900">
+          왜 여러 풀이를 비교하나요?
+        </h2>
+      </div>
+
+      <div class="grid gap-6 lg:grid-cols-5">
+        <div class="lg:col-span-3 space-y-4 text-sm leading-relaxed text-slate-600">
+          <p>
+            <strong class="text-slate-900">수능 수학 30문항 가운데 13문항은 4점 문항</strong>으로,
+            전체 100점 중 52점을 차지합니다. 4점 문항의 접근법을 어떻게 선택하느냐가
+            시험 전체의 시간 배분과 안정성에 큰 영향을 미칩니다.
+          </p>
+          <p>
+            하지만 하나의 풀이만 학습하면 조건이나 표현이 달라진 문제에서 적용 기준을 찾기 어려울 수 있습니다.
+            계산 과정이 긴 풀이만 고집하면 시험 시간 관리에도 부담이 생길 수 있습니다.
+          </p>
+
+          <div class="rounded-2xl border border-slate-200 bg-white p-5 sm:p-6">
+            <h3 class="text-sm font-bold text-slate-900">
+              HowLearn이 기르고자 하는 능력
+            </h3>
+            <ul class="mt-4 grid gap-2.5 sm:grid-cols-2">
+              {capabilities.map((item) => (
+                <li class="flex items-start gap-2 rounded-lg bg-slate-50 px-3 py-2.5 text-xs leading-relaxed text-slate-600">
+                  <span class="mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-indigo-100 text-[10px] font-bold text-indigo-700" aria-hidden="true">
+                    ✓
+                  </span>
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+
+        <aside class="lg:col-span-2">
+          <div class="space-y-5 rounded-2xl border border-indigo-100 bg-indigo-50/70 p-6 sm:p-7">
+            <div class="flex items-center justify-between gap-2">
+              <span class="text-[11px] font-bold uppercase tracking-wider text-indigo-600">4점 문항의 비중</span>
+              <span class="text-[10px] font-semibold text-indigo-500">수능 수학 기준</span>
+            </div>
+
+            <div>
+              <div class="flex items-end gap-2">
+                <span class="text-4xl font-extrabold tracking-tight text-indigo-800 tabular-nums">13</span>
+                <span class="pb-1 text-sm font-bold text-slate-500">/ 30문항</span>
+              </div>
+              <div class="mt-3 h-2 rounded-full bg-white">
+                <div class="h-2 w-[43%] rounded-full bg-indigo-500"></div>
+              </div>
+              <p class="mt-2 text-[11px] text-slate-500">전체 문항의 약 43%</p>
+            </div>
+
+            <div class="border-t border-indigo-100 pt-5">
+              <div class="flex items-end gap-2">
+                <span class="text-4xl font-extrabold tracking-tight text-indigo-800 tabular-nums">52</span>
+                <span class="pb-1 text-sm font-bold text-slate-500">/ 100점</span>
+              </div>
+              <div class="mt-3 h-2 rounded-full bg-white">
+                <div class="h-2 w-[52%] rounded-full bg-indigo-500"></div>
+              </div>
+              <p class="mt-2 text-[11px] text-slate-500">4점 문항이 차지하는 배점</p>
+            </div>
+
+            <p class="border-t border-indigo-100 pt-5 text-xs leading-relaxed text-slate-600">
+              같은 문항을 서로 다른 관점에서 살펴보며, 계산량과 오류 가능성을 고려해
+              스스로 풀이를 선택하는 연습을 합니다.
+            </p>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    {/* Learning methods */}
+    <section id="methods" class="scroll-mt-24 space-y-6">
+      <div class="max-w-3xl space-y-2">
+        <p class="text-[11px] font-bold uppercase tracking-wider text-indigo-600">HOW WE LEARN</p>
+        <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900">
+          HowLearn의 학습 방식
+        </h2>
+        <p class="text-sm leading-relaxed text-slate-500">
+          정석 풀이, 실전 풀이, 단계별 힌트를 문항의 성격에 맞게 조합합니다.
+          문항마다 제공되는 풀이의 수와 구성은 다를 수 있습니다.
+        </p>
+      </div>
+
+      <div class="grid gap-5 md:grid-cols-3">
+        {methods.map((method) => (
+          <article class="relative overflow-hidden rounded-2xl border border-slate-200 bg-white p-6 shadow-xs">
+            <span class:list={['absolute inset-x-0 top-0 h-1', method.accent]} aria-hidden="true"></span>
+
+            <div class="flex items-start justify-between gap-3">
+              <span class:list={['rounded-md border px-2.5 py-1 text-[11px] font-bold', method.badgeClass]}>
+                {method.badge}
+              </span>
+              <span class="text-3xl font-extrabold leading-none tracking-tight text-slate-100 tabular-nums" aria-hidden="true">
+                {method.step}
+              </span>
+            </div>
+
+            <h3 class="mt-4 text-base font-bold leading-snug text-slate-900">
+              {method.title}
+            </h3>
+            <p class="mt-2.5 text-xs leading-relaxed text-slate-600">
+              {method.body}
+            </p>
+            <p class="mt-3 border-t border-slate-100 pt-3 text-[11px] leading-relaxed text-slate-500">
+              {method.extra}
+            </p>
+
+            {method.flow.length > 0 && (
+              <div class="mt-4 flex flex-wrap items-center gap-1.5">
+                {method.flow.map((step, index) => (
+                  <span class="inline-flex items-center gap-1.5">
+                    <span class="rounded-md bg-emerald-50 px-2 py-1 text-[10px] font-bold text-emerald-700">
+                      {step}
+                    </span>
+                    {index < method.flow.length - 1 && (
+                      <span class="text-[10px] text-slate-300" aria-hidden="true">→</span>
+                    )}
+                  </span>
+                ))}
+              </div>
+            )}
+          </article>
+        ))}
+      </div>
+    </section>
+
+    {/* Selection criteria */}
+    <section id="criteria" class="scroll-mt-24 space-y-6">
+      <div class="max-w-3xl space-y-2">
+        <p class="text-[11px] font-bold uppercase tracking-wider text-indigo-600">EDITORIAL CRITERIA</p>
+        <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900">
+          콘텐츠 선정 기준
+        </h2>
+        <p class="text-sm leading-relaxed text-slate-500">
+          HowLearn은 한국교육과정평가원이 출제한 대학수학능력시험 수학 영역 기출문항을 중심으로
+          콘텐츠를 구성합니다. 다음 기준에 따라 학습 가치가 높은 문항을 선정합니다.
+        </p>
+      </div>
+
+      <div class="grid gap-4 sm:grid-cols-2">
+        {criteria.map((item, index) => (
+          <div class="flex items-start gap-3 rounded-xl border border-slate-200 bg-white p-4 shadow-xs sm:p-5">
+            <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-indigo-50 text-xs font-extrabold text-indigo-700">
+              {index + 1}
+            </span>
+            <p class="pt-1 text-xs leading-relaxed text-slate-600 sm:text-sm">
+              {item}
+            </p>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    {/* Production process */}
+    <section id="process" class="scroll-mt-24 space-y-6">
+      <div class="max-w-3xl space-y-2">
+        <p class="text-[11px] font-bold uppercase tracking-wider text-indigo-600">REVIEW PROCESS</p>
+        <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900">
+          콘텐츠 제작 및 검토 과정
+        </h2>
+        <p class="text-sm leading-relaxed text-slate-500">
+          HowLearn의 콘텐츠는 다음 과정을 거쳐 게시됩니다.
+        </p>
+      </div>
+
+      <div class="grid gap-6 lg:grid-cols-5">
+        <div class="lg:col-span-3 rounded-2xl border border-slate-200 bg-white p-6 shadow-xs sm:p-7">
+          <ol class="space-y-4">
+            {productionSteps.map((step, index) => (
+              <li class="flex items-start gap-3">
+                <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-slate-100 text-xs font-bold text-slate-700">
+                  {index + 1}
+                </span>
+                <p class="pt-1 text-xs leading-relaxed text-slate-600 sm:text-sm">
+                  {step}
+                </p>
+              </li>
+            ))}
+          </ol>
+        </div>
+
+        <aside class="lg:col-span-2 space-y-4">
+          <div class="rounded-2xl bg-slate-900 p-6 text-white">
+            <h3 class="text-sm font-bold">수정 이력 원칙</h3>
+            <p class="mt-2 text-xs leading-relaxed text-slate-300">
+              콘텐츠에 오류나 더 나은 풀이가 확인되면 수정 이력을 남기고 보완합니다.
+              최초 작성일과 최근 수정일은 콘텐츠 관리 이력이 확인되는 범위에서 투명하게 안내합니다.
+            </p>
+          </div>
+
+          <div class="rounded-2xl border border-amber-200 bg-amber-50 p-6">
+            <h3 class="text-sm font-bold text-amber-900">검토 표기 원칙</h3>
+            <p class="mt-2 text-xs leading-relaxed text-amber-800">
+              실제로 모든 콘텐츠를 복수 인원이 검토하는 경우에만 ‘교차 검토’라고 표시합니다.
+              검토자가 지정된 콘텐츠는 해당 검토자를 별도로 표시합니다.
+            </p>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    {/* Operator */}
+    <section id="operator" class="scroll-mt-24 space-y-6">
+      <div class="max-w-3xl space-y-2">
+        <p class="text-[11px] font-bold uppercase tracking-wider text-indigo-600">OPERATOR</p>
+        <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900">
+          운영자 소개
+        </h2>
+        <p class="text-sm leading-relaxed text-slate-500">
+          HowLearn은 수학 교사가 운영합니다.
+        </p>
+      </div>
+
+      <div class="grid gap-5 lg:grid-cols-5">
+        <div class="lg:col-span-2 rounded-2xl border border-slate-200 bg-white p-6 shadow-xs">
+          <div class="flex items-center gap-4">
+            <img
+              src="/images/common-profile.webp"
+              srcset="/images/common-profile-400.webp 400w, /images/common-profile.webp 800w"
+              sizes="96px"
+              alt="주기헌 HowLearn 운영자 프로필 사진"
+              width="800"
+              height="1000"
+              loading="lazy"
+              decoding="async"
+              class="aspect-[4/5] w-24 shrink-0 rounded-xl object-cover object-top ring-1 ring-slate-200 shadow-xs"
+            />
+            <div>
+              <h3 class="text-lg font-extrabold text-slate-900">주기헌</h3>
+              <p class="mt-0.5 text-xs font-semibold text-slate-500">HowLearn 운영자 · 수학교사</p>
+            </div>
+          </div>
+
+          <dl class="mt-6 divide-y divide-slate-100 text-xs">
+            <div class="grid grid-cols-[4.5rem_1fr] gap-3 py-3">
+              <dt class="font-bold text-slate-400">학력</dt>
+              <dd class="leading-relaxed text-slate-600">한국교원대학교 수학교육과 졸업</dd>
+            </div>
+            <div class="grid grid-cols-[4.5rem_1fr] gap-3 py-3">
+              <dt class="font-bold text-slate-400">자격</dt>
+              <dd class="leading-relaxed text-slate-600">중등학교 1급 정교사(수학)</dd>
+            </div>
+            <div class="grid grid-cols-[4.5rem_1fr] gap-3 py-3">
+              <dt class="font-bold text-slate-400">역할</dt>
+              <dd class="leading-relaxed text-slate-600">콘텐츠 기획 및 다양한 풀이 작성</dd>
+            </div>
+            <div class="grid grid-cols-[4.5rem_1fr] gap-3 py-3">
+              <dt class="font-bold text-slate-400">경력</dt>
+              <dd class="leading-relaxed text-slate-600">현직 수학교사(2014년 ~ 현재), 작가</dd>
+            </div>
+          </dl>
+        </div>
+
+        <div class="lg:col-span-3 space-y-4">
+          <div class="rounded-2xl border border-indigo-100 bg-indigo-50/60 p-6">
+            <h3 class="flex items-center gap-2 text-sm font-bold text-indigo-900">
+              <span class="h-2 w-2 rounded-full bg-indigo-600" aria-hidden="true"></span>
+              운영 목적
+            </h3>
+            <p class="mt-2 text-xs leading-relaxed text-slate-600 sm:text-sm">
+              학생이 풀이를 암기하는 데 그치지 않고, 문제의 구조를 이해해
+              스스로 풀이를 선택하도록 돕는 것입니다.
+            </p>
+          </div>
+
+          <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-xs">
+            <h3 class="text-sm font-bold text-slate-900">저서</h3>
+            <ul class="mt-4 space-y-3">
+              {books.map((book) => (
+                <li class="rounded-xl border border-slate-100 bg-slate-50/70 p-3.5">
+                  <p class="text-xs font-bold leading-snug text-slate-800 sm:text-sm">{book.title}</p>
+                  <p class="mt-1 text-[11px] leading-relaxed text-slate-500">{book.subtitle}</p>
+                  <p class="mt-1.5 text-[10px] font-medium text-slate-400">ISBN {book.isbn}</p>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    {/* Contact */}
+    <section id="contact" class="scroll-mt-24 overflow-hidden rounded-2xl bg-indigo-900 p-6 text-white shadow-md sm:p-8">
+      <div class="grid items-center gap-6 md:grid-cols-[1fr_auto]">
+        <div class="space-y-2">
+          <p class="text-[11px] font-bold uppercase tracking-wider text-indigo-300">CONTACT</p>
+          <h2 class="text-xl font-extrabold tracking-tight sm:text-2xl">
+            콘텐츠에 관한 질문과 제보를 받습니다
+          </h2>
+          <p class="text-xs leading-relaxed text-slate-300 sm:text-sm">
+            콘텐츠에 관한 질문, 오류 제보 또는 저작권 관련 문의는 아래 연락처로 보내주세요.
+          </p>
+        </div>
+
+        <div class="flex flex-col gap-2 sm:flex-row md:flex-col">
+          <a
+            href="mailto:math@howlearn.kr"
+            class="inline-flex items-center justify-center rounded-xl bg-white px-4 py-3 text-xs font-bold text-indigo-800 hover:bg-indigo-50 transition-colors"
+          >
+            math@howlearn.kr
+          </a>
+          <a
+            href="/contact"
+            class="inline-flex items-center justify-center gap-1 rounded-xl border border-white/20 bg-white/5 px-4 py-3 text-xs font-bold text-white hover:bg-white/10 transition-colors"
+          >
+            문의 페이지
+            <span aria-hidden="true">→</span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    {/* Source & copyright */}
+    <section class="border-t border-slate-200 pt-8">
+      <h2 class="text-sm font-bold text-slate-900">독립 운영 및 출처 안내</h2>
+      <div class="mt-3 space-y-2 text-xs leading-relaxed text-slate-500">
+        <p>
+          기출문항의 출처와 관련 권리는 각 권리자에게 있으며, 각 콘텐츠 페이지에 출처를 표시합니다.
+          HowLearn이 독자적으로 작성한 풀이, 힌트, 비교 분석 및 설명은 별도의 창작 콘텐츠입니다.
+        </p>
+        <p>
+          자료 이용 또는 저작권과 관련된 문의가 접수되면 내용을 확인한 후 필요한 조치를 취하겠습니다.
+        </p>
+      </div>
+    </section>
+  </div>
+</BaseLayout>

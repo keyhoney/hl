@@ -1,0 +1,115 @@
+---
+import katex from 'katex';
+import { normalizeMathMarkdownSource } from '../lib/mdx/normalize';
+
+interface Props {
+  content: string;
+  className?: string;
+  block?: boolean;
+  /** Wrapper element for inline (non-block) content. Use "span" inside headings/inline flow. */
+  as?: 'div' | 'span';
+}
+
+const { content, className = '', block = false, as: Tag = 'div' } = Astro.props;
+
+type Part =
+  | { kind: 'text'; value: string }
+  | { kind: 'math'; html: string; display: boolean }
+  | { kind: 'err'; raw: string };
+
+const parts: Part[] = [];
+let blockHtml: string | null = null;
+let blockError = false;
+
+/**
+ * Safely parses a string that may contain LaTeX math expressions:
+ * - Block math: $$...$$
+ * - Inline math: $...$
+ * or plain text. All rendering happens at build time — no client JS needed.
+ */
+if (content && block) {
+  try {
+    const cleanMath = normalizeMathMarkdownSource(content.replace(/^\$\$|\$\$$/g, '')).trim();
+    blockHtml = katex.renderToString(cleanMath, {
+      displayMode: true,
+      throwOnError: false,
+      strict: false,
+    });
+  } catch {
+    blockError = true;
+  }
+} else if (content) {
+  let remaining = normalizeMathMarkdownSource(content);
+
+  while (remaining.length > 0) {
+    const blockMatch = remaining.match(/\$\$([\s\S]*?)\$\$/);
+    const inlineMatch = remaining.match(/\$([^$\n]+?)\$/);
+
+    let firstMatchIndex = -1;
+    let matchType: 'block' | 'inline' | null = null;
+    let matchedRaw = '';
+    let mathExp = '';
+
+    if (blockMatch && blockMatch.index !== undefined) {
+      firstMatchIndex = blockMatch.index;
+      matchType = 'block';
+      matchedRaw = blockMatch[0];
+      mathExp = blockMatch[1];
+    }
+
+    if (inlineMatch && inlineMatch.index !== undefined) {
+      if (firstMatchIndex === -1 || inlineMatch.index < firstMatchIndex) {
+        firstMatchIndex = inlineMatch.index;
+        matchType = 'inline';
+        matchedRaw = inlineMatch[0];
+        mathExp = inlineMatch[1];
+      }
+    }
+
+    if (firstMatchIndex === -1 || matchType === null) {
+      parts.push({ kind: 'text', value: remaining });
+      break;
+    }
+
+    if (firstMatchIndex > 0) {
+      parts.push({ kind: 'text', value: remaining.substring(0, firstMatchIndex) });
+    }
+
+    try {
+      const isDisplay = matchType === 'block';
+      const html = katex.renderToString(mathExp.trim(), {
+        displayMode: isDisplay,
+        throwOnError: false,
+        strict: false,
+      });
+      parts.push({ kind: 'math', html, display: isDisplay });
+    } catch {
+      parts.push({ kind: 'err', raw: matchedRaw });
+    }
+
+    remaining = remaining.substring(firstMatchIndex + matchedRaw.length);
+  }
+}
+---
+
+{content && block && !blockError && (
+  <div class:list={['katex-display-wrapper my-2 overflow-x-auto', className]} set:html={blockHtml} />
+)}
+{content && block && blockError && <pre class="text-red-500 font-mono text-xs">{content}</pre>}
+{content && !block && (
+  <Tag class:list={['math-content', className]}>
+    {parts.map((part) =>
+      part.kind === 'text' ? (
+        <span class="whitespace-pre-line leading-relaxed">{part.value}</span>
+      ) : part.kind === 'math' ? (
+        part.display ? (
+          <div class="my-3 overflow-x-auto py-1 text-center" set:html={part.html} />
+        ) : (
+          <span class="inline-block px-0.5 align-middle" set:html={part.html} />
+        )
+      ) : (
+        <code class="font-mono text-xs text-rose-600 bg-rose-50 px-1 rounded">{part.raw}</code>
+      )
+    )}
+  </Tag>
+)}

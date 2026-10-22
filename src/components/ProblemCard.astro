@@ -1,0 +1,124 @@
+---
+import type { Problem } from '../types/mathProblem';
+import { difficultyStars, examShortLabel, getSubjectBadgeStyle } from '../utils/mathHelpers';
+import { summarizeSolutionTypes } from '../utils/solutions';
+import MdxContent from './MdxContent.astro';
+
+interface Props extends astroHTML.JSX.HTMLAttributes {
+  problem: Problem;
+}
+
+const { problem, ...rest } = Astro.props;
+
+const subjectStyle = getSubjectBadgeStyle(problem.subject);
+const typeSummary = summarizeSolutionTypes(problem.solutions);
+const href = `/problem/${problem.id}`;
+const examLabel = examShortLabel(problem.examType, problem.month);
+const difficulty = Math.max(0, Math.min(5, problem.difficulty));
+---
+
+<a
+  {...rest}
+  href={href}
+  class="bg-white border border-slate-200 hover:border-indigo-400 hover:shadow-md transition-all rounded-xl p-5 cursor-pointer flex flex-col justify-between group focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:outline-hidden"
+  aria-label={`${problem.year}학년도 ${problem.problemNumber}번 문항 상세 보기`}
+>
+  <div>
+    {/* Year + problem number, difficulty */}
+    <div class="flex items-start justify-between gap-3 mb-2.5">
+      <div class="min-w-0">
+        <h3 class="flex flex-wrap items-baseline gap-x-1.5 text-xl font-extrabold tracking-tight text-slate-900 group-hover:text-indigo-700 transition-colors">
+          <span>{problem.year}학년도</span>
+          <span class="text-indigo-600">{problem.problemNumber}번</span>
+        </h3>
+        <p class="mt-1 text-[11px] font-semibold text-slate-400 line-clamp-1">
+          {examLabel} · {problem.unitName} · {problem.concept}
+        </p>
+      </div>
+
+      <span
+        class="inline-flex shrink-0 items-center gap-0.5 rounded-md border border-amber-200 bg-amber-50 px-2 py-1"
+        title={`난이도 ${difficulty} / 5`}
+      >
+        <span class="text-sm leading-none font-bold tracking-tighter text-amber-500" aria-hidden="true">
+          {difficultyStars(difficulty)}
+        </span>
+        <span class="sr-only">난이도 {difficulty} / 5</span>
+      </span>
+    </div>
+
+    {/* Subject / points badges */}
+    <div class="flex flex-wrap items-center gap-1.5 mb-3 text-xs">
+      <span class:list={['font-semibold px-2.5 py-1 rounded-md border', subjectStyle.bg, subjectStyle.text, subjectStyle.border]}>
+        {problem.subject}
+      </span>
+      <span class="font-bold text-amber-700 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-md">
+        {problem.points}점
+      </span>
+    </div>
+
+    {/* Problem body preview */}
+    <div class="relative overflow-hidden bg-white border border-slate-200 rounded-lg p-3 mb-4">
+      <div class="flex items-center gap-1.5 mb-1.5 text-[11px] font-bold text-slate-500">
+        <span class="w-1.5 h-1.5 rounded-full bg-indigo-500" aria-hidden="true"></span>
+        문제
+      </div>
+      <MdxContent
+        content={problem.problemBody}
+        class="problem-card-preview text-xs text-slate-700 leading-relaxed"
+      />
+      <div class="pointer-events-none absolute inset-x-0 bottom-0 h-7 bg-gradient-to-t from-white via-white/85 to-transparent" aria-hidden="true"></div>
+    </div>
+  </div>
+
+  <div>
+    {/* Solution summary tags */}
+    <div class="pt-3 border-t border-slate-100 flex flex-wrap items-center justify-between gap-2 text-xs">
+      <div class="flex items-center gap-1 text-slate-500 font-medium">
+        <span class="text-indigo-600 font-bold">{problem.hints.length}개 힌트</span>
+        <span>·</span>
+        <span>{problem.solutions.length}개 풀이</span>
+      </div>
+
+      <span class="text-slate-500 bg-slate-50 border border-slate-200 px-2 py-0.5 rounded-md font-semibold text-[11px]">
+        {problem.answerType === 'mcq' ? '객관식' : '단답형'}
+      </span>
+    </div>
+
+    {typeSummary.length > 0 && (
+      <div class="mt-2 flex flex-wrap items-center gap-1 text-[11px] text-slate-500">
+        {typeSummary.map((item) => (
+          <span class="inline-flex items-center gap-1 bg-slate-50 border border-slate-100 px-1.5 py-0.5 rounded">
+            <span class:list={['w-1.5 h-1.5 rounded-full', item.dotColor]} aria-hidden="true"></span>
+            {item.shortLabel} {item.count}
+          </span>
+        ))}
+      </div>
+    )}
+
+    {/* Action Link */}
+    <div class="mt-3 flex items-center justify-end">
+      <span class="text-xs font-bold text-indigo-600 group-hover:translate-x-0.5 transition-transform inline-flex items-center gap-1">
+        문제·힌트·풀이 보기 →
+      </span>
+    </div>
+  </div>
+</a>
+
+<style is:global>
+  .problem-card-preview {
+    max-height: 4.75rem;
+    overflow: hidden;
+  }
+
+  .problem-card-preview .katex-display {
+    margin: 0.25rem 0 !important;
+    padding: 0;
+  }
+
+  .problem-card-preview img {
+    max-height: 4.75rem;
+    width: auto;
+    object-fit: contain;
+  }
+</style>

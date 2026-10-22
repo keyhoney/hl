@@ -1,0 +1,255 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getArchiveStats } from '../data/problems';
+
+const stats = await getArchiveStats();
+const newest = stats.years[0] ?? 0;
+const oldestYear = stats.years[stats.years.length - 1] ?? newest;
+
+const archiveTiles = [
+  {
+    label: '등록 기출',
+    value: stats.total,
+    unit: '문항',
+    note: '수능·모평 기출',
+    accent: 'bg-indigo-500',
+  },
+  {
+    label: '누적 힌트',
+    value: stats.hintCount,
+    unit: '개',
+    note: '단계별 조건 해석 가이드',
+    accent: 'bg-emerald-500',
+  },
+  {
+    label: '누적 등록 풀이',
+    value: stats.solutionCount,
+    unit: '개',
+    note: '정석 풀이 · 실전 숏컷',
+    accent: 'bg-amber-500',
+  },
+  {
+    label: '수록 학년도',
+    value: stats.years.length,
+    unit: '개년',
+    note: `${oldestYear}~${newest}학년도`,
+    accent: 'bg-slate-500',
+  },
+];
+
+const pillars = [
+  {
+    num: '1',
+    numClass: 'bg-indigo-50 border-indigo-200 text-indigo-700',
+    accentBar: 'bg-indigo-500',
+    title: '원리로 증명하는 정석 풀이',
+    badge: '변형에도 흔들리지 않는 기본기',
+    badgeClass: 'bg-indigo-50 text-indigo-700',
+    body: '정의와 정리에서 출발해 답까지 가는 과정을 빠짐없이 보여줍니다. 해설을 외우는 대신 “왜 이 조건에서 이 식이 나오는지”를 이해하므로, 숫자만 바꾼 변형 문항에도 그대로 적용할 수 있습니다.',
+  },
+  {
+    num: '2',
+    numClass: 'bg-amber-50 border-amber-200 text-amber-700',
+    accentBar: 'bg-amber-500',
+    title: '3분을 벌어주는 실전 숏컷',
+    badge: '계산량 절감 · 시간 확보',
+    badgeClass: 'bg-amber-50 text-amber-700',
+    body: '비율 관계·대칭성·면적 공식처럼 시험장에서 바로 쓸 수 있는 압축 풀이를 함께 제공합니다. 정석으로 푸는 시간을 줄이고, 남긴 시간을 검산과 고난도 문항에 투자할 수 있습니다.',
+  },
+  {
+    num: '3',
+    numClass: 'bg-emerald-50 border-emerald-200 text-emerald-700',
+    accentBar: 'bg-emerald-500',
+    title: '막힘을 없애는 단계별 힌트',
+    badge: '전 문항 제공 · 자기주도 완주',
+    badgeClass: 'bg-emerald-50 text-emerald-700',
+    body: '모든 문항에 조건을 어떻게 읽고 식으로 옮길지 안내하는 힌트를 1~5단계로 제공합니다. 정답을 먼저 보지 않고 스스로 첫 단계를 열어, 혼자서도 풀이를 끝까지 완주하는 힘을 기릅니다.',
+  },
+];
+
+const studySteps = [
+  {
+    title: '취약 유형부터 찾기',
+    body: `${stats.total}문항을 처음부터 모두 풀 필요는 없습니다. 학년도·과목·계산량 필터로 내가 자주 틀리는 4점 문항부터 추립니다.`,
+    link: '/problems',
+    linkLabel: '문항 검색으로 시작',
+    accent: 'text-indigo-700 bg-indigo-50 border-indigo-200',
+  },
+  {
+    title: '힌트로 조건 해석하기',
+    body: '정답부터 보지 말고 단계별 힌트를 따라 조건을 식으로 옮깁니다. 막힌 지점을 스스로 찾아내는 과정 자체가 실전 사고력을 만듭니다.',
+    link: '/about',
+    linkLabel: '학습법 자세히 보기',
+    accent: 'text-amber-700 bg-amber-50 border-amber-200',
+  },
+  {
+    title: '정석과 숏컷으로 검산하기',
+    body: '같은 문항을 정석 풀이와 실전 숏컷으로 각각 풀어 보며 계산량과 정확성을 비교합니다. 다른 경로로 같은 답에 도달하는 경험이 검산 습관을 만듭니다.',
+    link: '/problems',
+    linkLabel: '전체 문항 둘러보기',
+    accent: 'text-emerald-700 bg-emerald-50 border-emerald-200',
+  },
+];
+---
+
+<BaseLayout>
+  <div class="space-y-16">
+    {/* Hero Section */}
+    <section class="bg-gradient-to-b from-indigo-900 via-indigo-950 to-slate-900 text-white rounded-2xl p-8 sm:p-12 shadow-md relative overflow-hidden">
+      <div class="max-w-3xl space-y-5 relative z-10">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/20 border border-indigo-400/30 text-indigo-200 text-xs font-semibold">
+          <span>✨ HowLearn · 수능 수학 4점 최신 기출 다각도 분석 완료</span>
+        </div>
+
+        <h1 class="text-3xl sm:text-5xl font-extrabold tracking-tight leading-tight">
+          수능 수학, <br />
+          <span class="text-indigo-300">하나의 해법</span>만으로는 부족합니다.
+        </h1>
+
+        <p class="text-sm sm:text-base text-slate-300 leading-relaxed max-w-2xl">
+          수능 시험장 100분 동안 4점 킬러를 정석대로만 풀면 시간이 부족하고, 숏컷에만 의존하면 낯선 변형에 무너집니다.
+          <strong> 정석 풀이</strong>의 엄밀함, <strong>실전 숏컷</strong>의 속도, 그리고 막힘을 풀어주는 <strong>단계별 힌트</strong>까지 —
+          문항마다 다른 해법 조합을 비교하며 완성하는 수능 수학 아카이브입니다.
+        </p>
+
+        <div class="pt-2 flex flex-wrap items-center gap-3">
+          <a
+            href="/problems"
+            class="px-6 py-3 rounded-xl bg-indigo-500 hover:bg-indigo-600 text-white font-bold text-sm shadow-md transition-colors"
+          >
+            전체 4점 문항 해법 탐색하기
+          </a>
+          <a
+            href="/about"
+            class="px-6 py-3 rounded-xl bg-slate-800/80 hover:bg-slate-800 text-slate-200 font-semibold text-sm border border-slate-700 transition-colors"
+          >
+            다각도 해법 학습법 소개
+          </a>
+        </div>
+      </div>
+
+      {/* Decorative math symbol backdrop watermark */}
+      <div aria-hidden="true" class="absolute -right-3 -bottom-5 hidden select-none pointer-events-none md:block">
+        <div class="absolute -inset-8 rounded-full border border-indigo-300/10"></div>
+        <div class="absolute -inset-3 rounded-full border border-dashed border-indigo-300/10"></div>
+        <div class="relative -rotate-6 bg-gradient-to-br from-white/25 via-indigo-200/10 to-indigo-400/5 bg-clip-text px-6 pb-4 font-serif text-[10rem] font-semibold italic leading-none tracking-[-0.08em] text-transparent drop-shadow-[0_0_28px_rgba(129,140,248,0.2)]">
+          HowLearn
+          <span class="absolute bottom-0 right-8 font-sans text-[9px] font-bold not-italic tracking-[0.35em] text-indigo-200/30">MATH · INSIGHT</span>
+        </div>
+      </div>
+    </section>
+
+    {/* Archive at a Glance */}
+    <section class="space-y-6">
+      <div class="text-center max-w-2xl mx-auto space-y-2">
+        <div class="text-xs font-bold text-indigo-600 uppercase tracking-wider">
+          ARCHIVE AT A GLANCE
+        </div>
+        <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+          숫자로 보는 다각도 해법 아카이브
+        </h2>
+        <p class="text-sm text-slate-500">
+          기출 문항과 축적된 힌트·풀이가 함께 쌓입니다. 지금까지 정리된 학습 자산을 한눈에 확인하세요.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        {archiveTiles.map((tile) => (
+          <div class="relative overflow-hidden bg-white border border-slate-200 rounded-xl p-5 shadow-xs">
+            <span class:list={['absolute inset-x-0 top-0 h-1', tile.accent]} aria-hidden="true"></span>
+            <div class="text-xs font-semibold text-slate-500">{tile.label}</div>
+            <div class="mt-2 flex items-baseline gap-1">
+              <span class="text-3xl font-extrabold tracking-tight text-slate-900 tabular-nums">
+                {tile.value}
+              </span>
+              <span class="text-sm font-bold text-slate-400">{tile.unit}</span>
+            </div>
+            <p class="mt-1 text-[11px] text-slate-400">{tile.note}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    {/* 3 Pillars of Solution Section */}
+    <section class="space-y-6">
+      <div class="text-center max-w-2xl mx-auto space-y-2">
+        <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+          왜 다각도 해법인가?
+        </h2>
+        <p class="text-sm text-slate-500">
+          한 문항을 원리로 이해하고, 실전 속도로 풀고, 힌트로 스스로 완주하는 세 가지 축을 제공합니다.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {pillars.map((pillar) => (
+          <div class="group relative overflow-hidden bg-white border border-slate-200 rounded-xl p-6 pt-7 shadow-xs space-y-3 hover:border-indigo-300 hover:shadow-md hover:-translate-y-0.5 transition-all">
+            <span class:list={['absolute inset-x-0 top-0 h-1', pillar.accentBar]} aria-hidden="true"></span>
+            <div class:list={['w-10 h-10 rounded-lg border flex items-center justify-center font-bold text-lg', pillar.numClass]}>
+              {pillar.num}
+            </div>
+            <h3 class="text-lg font-bold text-slate-900">{pillar.title}</h3>
+            <span class:list={['inline-block text-xs font-semibold px-2.5 py-0.5 rounded-full', pillar.badgeClass]}>
+              {pillar.badge}
+            </span>
+            <p class="text-xs text-slate-600 leading-relaxed">
+              {pillar.body}
+            </p>
+          </div>
+        ))}
+      </div>
+
+      <p class="text-center text-xs text-slate-500 max-w-2xl mx-auto">
+        문항마다 제공되는 풀이의 구성은 다르지만, 모든 문항에 단계별 힌트가 함께 제공됩니다.
+        정답만 확인하는 학습이 아니라 조건을 해석하는 과정을 남깁니다.
+      </p>
+    </section>
+
+    {/* Study Workflow */}
+    <section class="space-y-6">
+      <div class="text-center max-w-2xl mx-auto space-y-2">
+        <div class="text-xs font-bold text-indigo-600 uppercase tracking-wider">
+          STUDY WORKFLOW
+        </div>
+        <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+          4점 문항, 이렇게 학습하세요
+        </h2>
+        <p class="text-sm text-slate-500">
+          문항을 고르고, 힌트로 조건을 해석하고, 정석과 숏컷으로 검산하는 3단계 루틴입니다.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {studySteps.map((step, index) => (
+          <div class="bg-white border border-slate-200 rounded-xl p-6 shadow-xs flex flex-col hover:border-indigo-300 hover:shadow-md transition-all">
+            <div class="flex items-start justify-between gap-3 mb-4">
+              <span class:list={['text-xs font-bold px-2.5 py-1 rounded-md border', step.accent]}>
+                STEP {index + 1}
+              </span>
+              <span aria-hidden="true" class="text-3xl font-extrabold leading-none text-slate-100 tabular-nums">
+                0{index + 1}
+              </span>
+            </div>
+
+            <h3 class="text-lg font-bold text-slate-900">{step.title}</h3>
+            <p class="mt-2 text-xs text-slate-600 leading-relaxed grow">
+              {step.body}
+            </p>
+
+            <a
+              href={step.link}
+              class="mt-4 inline-flex items-center gap-1 text-xs font-bold text-indigo-600 hover:text-indigo-800 transition-colors"
+            >
+              {step.linkLabel} →
+            </a>
+          </div>
+        ))}
+      </div>
+
+      <p class="text-center text-xs text-slate-500 max-w-2xl mx-auto">
+        정답을 맞히는 것보다 <strong>왜 그 해법이 통하는지</strong>를 비교하는 것이 목표입니다.
+        힌트로 조건을 정리하고, 정석과 숏컷으로 각각 풀어 보며 스스로 검산하는 습관을 만드세요.
+      </p>
+    </section>
+  </div>
+</BaseLayout>

@@ -1,0 +1,17 @@
+---
+import { renderInlineMarkdown, renderMarkdown } from '../lib/mdx/render';
+
+interface Props {
+  content: string;
+  class?: string;
+  /** 짧은 한 문단(선지·배지)을 `<p>` 없이 렌더링합니다. */
+  inline?: boolean;
+  /** 래퍼 태그 */
+  as?: 'div' | 'span' | 'section';
+}
+
+const { content, class: className = '', inline = false, as: Tag = 'div' } = Astro.props;
+const html = inline ? await renderInlineMarkdown(content) : await renderMarkdown(content);
+---
+
+<Tag class:list={[inline ? 'mdx-inline' : 'mdx-content', className]} set:html={html} />

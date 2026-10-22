@@ -1,0 +1,47 @@
+---
+/**
+ * HowLearn 브랜드 로고 (타일 + 워드마크).
+ *
+ * 이름의 두 낱말을 시각적으로 구분합니다.
+ *  - `How`   : 인디고 · 굵게  → 어떻게 푸는가 (접근법)
+ *  - `Learn` : 다크/화이트    → 익히고 완성하는 것 (결과)
+ * 타일도 같은 원리로 `H`는 흰색, `L`은 반투명 톤으로 나눕니다.
+ *
+ * 헤더(밝은 배경)와 푸터(어두운 배경)에서 함께 쓰도록 `tone`·`size`를 받습니다.
+ */
+interface Props {
+  /** 'light'는 밝은 배경(헤더), 'dark'는 어두운 배경(푸터)용입니다. */
+  tone?: 'light' | 'dark';
+  /** 'md'는 헤더, 'sm'은 푸터 등 좁은 영역용입니다. */
+  size?: 'md' | 'sm';
+  class?: string;
+}
+
+const { tone = 'light', size = 'md', class: className = '' } = Astro.props;
+
+const isDark = tone === 'dark';
+const isMd = size === 'md';
+
+const tileBg = isDark ? 'bg-indigo-500' : 'bg-indigo-600';
+const tileSecond = isDark ? 'text-indigo-200' : 'text-indigo-300';
+const howTone = isDark ? 'text-indigo-300' : 'text-indigo-600';
+const learnTone = isDark ? 'text-white' : 'text-slate-900';
+---
+
+<span class:list={['inline-flex items-center gap-2', className]}>
+  <span
+    class:list={[
+      'inline-flex items-center justify-center font-extrabold shadow-xs select-none',
+      isMd ? 'h-9 w-9 rounded-lg text-base' : 'h-7 w-7 rounded-md text-sm',
+      tileBg,
+    ]}
+    aria-hidden="true"
+  ><span class="text-white">H</span><span class={tileSecond}>L</span></span>
+
+  <span
+    class:list={[
+      'font-extrabold leading-none tracking-tight',
+      isMd ? 'text-base sm:text-lg' : 'text-lg',
+    ]}
+  ><span class={howTone}>How</span><span class={learnTone}>Learn</span></span>
+</span>

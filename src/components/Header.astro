@@ -1,0 +1,144 @@
+---
+import Brand from './Brand.astro';
+
+interface Props {
+  currentPath: string;
+}
+
+const { currentPath } = Astro.props;
+
+const navItems = [
+  { label: '홈', href: '/', match: '/' },
+  { label: '문항 검색·목록', href: '/problems', match: '/problems' },
+  { label: '사이트 소개', href: '/about', match: '/about' },
+  { label: '문의·제보', href: '/contact', match: '/contact' },
+];
+
+function isActive(match: string): boolean {
+  if (match === '/') return currentPath === '/';
+  return currentPath === match || currentPath.startsWith(`${match}/`);
+}
+---
+
+<header class="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex items-center justify-between h-16">
+      {/* Logo & Brand */}
+      <div class="flex items-center gap-3">
+        <a
+          href="/"
+          class="flex flex-col gap-1 text-left group focus:outline-hidden focus:ring-2 focus:ring-indigo-500 rounded-lg p-1"
+          aria-label="HowLearn 홈으로 이동"
+        >
+          <span class="flex items-center gap-2.5">
+            <Brand />
+            <span class="text-[11px] font-semibold text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded-full border border-indigo-200 hidden sm:inline-block">
+              4점 다각도 해법
+            </span>
+          </span>
+        </a>
+      </div>
+
+      {/* Desktop Navigation */}
+      <nav class="hidden md:flex items-center space-x-1" aria-label="메인 네비게이션">
+        {navItems.map((item) => {
+          const active = isActive(item.match);
+          return (
+            <a
+              href={item.href}
+              class:list={[
+                'px-3.5 py-2 rounded-lg text-sm font-semibold transition-colors',
+                active
+                  ? 'bg-indigo-50 text-indigo-700 font-bold'
+                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100',
+              ]}
+              aria-current={active ? 'page' : undefined}
+            >
+              {item.label}
+            </a>
+          );
+        })}
+      </nav>
+
+      {/* Right Header action */}
+      <div class="hidden lg:flex items-center gap-2">
+        <a
+          href="/problems"
+          class="text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 px-3.5 py-2 rounded-lg transition-colors shadow-xs"
+        >
+          4점 킬러 해법 검색
+        </a>
+      </div>
+
+      {/* Mobile hamburger menu button */}
+      <div class="flex md:hidden">
+        <button
+          type="button"
+          data-menu-toggle
+          aria-expanded="false"
+          aria-controls="mobile-nav"
+          class="p-2 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-slate-100 focus:outline-hidden focus:ring-2 focus:ring-indigo-500"
+          aria-label="메뉴 열기"
+        >
+          <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path
+              data-icon-open
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M4 6h16M4 12h16M4 18h16"
+            />
+            <path
+              data-icon-close
+              class="hidden"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M6 18L18 6M6 6l12 12"
+            />
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  {/* Mobile Navigation Drawer */}
+  <div id="mobile-nav" class="md:hidden border-b border-slate-200 bg-white px-4 pt-2 pb-4 space-y-1" hidden>
+    {navItems.map((item) => {
+      const active = isActive(item.match);
+      return (
+        <a
+          href={item.href}
+          class:list={[
+            'block w-full text-left px-3 py-2.5 rounded-lg text-sm font-semibold transition-colors',
+            active
+              ? 'bg-indigo-50 text-indigo-700 font-bold'
+              : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900',
+          ]}
+          aria-current={active ? 'page' : undefined}
+        >
+          {item.label}
+        </a>
+      );
+    })}
+  </div>
+</header>
+
+<script>
+  const toggle = document.querySelector<HTMLButtonElement>('[data-menu-toggle]');
+  const nav = document.getElementById('mobile-nav');
+  const iconOpen = toggle?.querySelector('[data-icon-open]');
+  const iconClose = toggle?.querySelector('[data-icon-close]');
+
+  const setOpen = (open: boolean) => {
+    if (!toggle || !nav) return;
+    nav.toggleAttribute('hidden', !open);
+    toggle.setAttribute('aria-expanded', String(open));
+    toggle.setAttribute('aria-label', open ? '메뉴 닫기' : '메뉴 열기');
+    iconOpen?.classList.toggle('hidden', open);
+    iconClose?.classList.toggle('hidden', !open);
+  };
+
+  toggle?.addEventListener('click', () => setOpen(nav?.hasAttribute('hidden') ?? false));
+  nav?.querySelectorAll('a').forEach((link) => link.addEventListener('click', () => setOpen(false)));
+</script>
