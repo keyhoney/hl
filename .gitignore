@@ -15,6 +15,7 @@
 
 # ── 2. 배포에 꼭 필요한 파일만 예외 허용 ──
 !.gitignore
+!.nvmrc
 !package.json
 !package-lock.json
 !astro.config.mjs
