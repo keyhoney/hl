@@ -13,4 +13,8 @@ export default defineConfig({
   vite: {
     plugins: [tailwindcss()],
   },
+  build: {
+    // 외부 CSS 요청이 초기 렌더링을 막지 않도록 모든 스타일을 HTML에 인라인합니다.
+    inlineStylesheets: 'always',
+  },
 });

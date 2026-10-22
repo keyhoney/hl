@@ -2,9 +2,10 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import ProblemCard from '../components/ProblemCard.astro';
 import { getProblems } from '../data/problems';
-import type { Problem } from '../types/mathProblem';
 import { getUniqueYears } from '../utils/filterProblems';
 import { ALL_SUBJECTS } from '../utils/routes';
+
+const PAGE = 12;
 
 const problems = await getProblems();
 
@@ -14,26 +15,7 @@ const initialYear = params.get('year') ?? 'all';
 const initialSubject = params.get('subject') ?? '전체';
 
 const availableYears = getUniqueYears(problems);
-
-function searchBlob(problem: Problem): string {
-  const solutionText = problem.solutions
-    .map((s) => `${s.title} ${s.summary}`)
-    .join(' ');
-  return [
-    problem.examName,
-    problem.subject,
-    problem.unitName,
-    problem.subChapter,
-    `${problem.problemNumber}`,
-    `${problem.problemNumber}번`,
-    problem.problemBody,
-    problem.keyInsight,
-    solutionText,
-  ]
-    .join(' ')
-    .replace(/\s+/g, ' ')
-    .toLowerCase();
-}
+const totalPages = Math.max(1, Math.ceil(problems.length / PAGE));
 
 const hasActiveFilters =
   initialQuery !== '' || initialYear !== 'all' || initialSubject !== '전체';
@@ -43,7 +25,13 @@ const hasActiveFilters =
   title="문항 검색·목록 | HowLearn"
   description="정석 풀이·스킬 숏컷·단계별 힌트가 등록된 수능 수학 4점 기출 문항을 학년도, 과목별로 검색하고 비교해 보세요."
 >
-  <div class="space-y-8" data-problem-list>
+  <div
+    class="space-y-8"
+    data-problem-list
+    data-total={problems.length}
+    data-page-size={PAGE}
+    data-total-pages={totalPages}
+  >
     {/* Page Header */}
     <div class="border-b border-slate-200 pb-5">
       <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
@@ -135,26 +123,14 @@ const hasActiveFilters =
       <span>정렬: 최근 학년도 순</span>
     </div>
 
-    {/* Problem Cards Grid */}
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" data-problem-grid>
-      {problems.slice(0, 12).map((problem) => (
-        <ProblemCard
-          problem={problem}
-          data-problem-card
-          data-year={String(problem.year)}
-          data-subject={problem.subject}
-          data-search={searchBlob(problem)}
-        />
-      ))}
-      {problems.slice(12).map((problem) => (
-        <ProblemCard
-          problem={problem}
-          data-problem-card
-          data-year={String(problem.year)}
-          data-subject={problem.subject}
-          data-search={searchBlob(problem)}
-          hidden={true}
-        />
+    {/* Problem Cards Grid — initial HTML contains only the first page. */}
+    <div
+      class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+      data-problem-grid
+      aria-busy="false"
+    >
+      {problems.slice(0, PAGE).map((problem) => (
+        <ProblemCard problem={problem} />
       ))}
     </div>
 
@@ -179,7 +155,10 @@ const hasActiveFilters =
     {/* Pagination Bar (bottom, prominent) */}
     <div class="mt-10 flex flex-col items-center gap-3" data-pagination-bar>
       <div class="flex items-center gap-2 text-sm font-medium text-slate-700">
-        <span data-page-info>페이지 <strong class="text-indigo-600 font-bold" data-current-page>1</strong> / <strong data-total-pages>1</strong></span>
+        <span data-page-info>
+          페이지 <strong class="text-indigo-600 font-bold" data-current-page>1</strong> / <strong data-total-pages>{totalPages}</strong>
+          · <span class="text-slate-400 font-normal">(1-{Math.min(PAGE, problems.length)} / {problems.length})</span>
+        </span>
       </div>
       <div class="flex items-center gap-2" data-pagination-controls></div>
     </div>
@@ -187,10 +166,13 @@ const hasActiveFilters =
 </BaseLayout>
 
 <script>
-  const PAGE = 12;
   const root = document.querySelector<HTMLElement>('[data-problem-list]');
+
   if (root) {
-    const cards = Array.from(root.querySelectorAll<HTMLElement>('[data-problem-card]'));
+    const PAGE = Number(root.dataset.pageSize ?? '12') || 12;
+    const TOTAL = Number(root.dataset.total ?? '0') || 0;
+    const TOTAL_PAGES_ALL = Math.max(1, Number(root.dataset.totalPages ?? '1') || 1);
+
     const searchInput = root.querySelector<HTMLInputElement>('[data-search-input]');
     const clearBtn = root.querySelector<HTMLButtonElement>('[data-search-clear]');
     const filterButtons = Array.from(root.querySelectorAll<HTMLButtonElement>('[data-filter]'));
@@ -204,75 +186,326 @@ const hasActiveFilters =
     const totalPagesEl = root.querySelector<HTMLElement>('[data-total-pages]');
     const paginationControls = root.querySelector<HTMLElement>('[data-pagination-controls]');
     const paginationBar = root.querySelector<HTMLElement>('[data-pagination-bar]');
+
     const params = new URLSearchParams(window.location.search);
     const state: Record<string, string> = {
-      q: params.get('q') ?? '', year: params.get('year') ?? 'all', subject: params.get('subject') ?? '전체', page: params.get('page') ?? '1',
+      q: params.get('q') ?? '',
+      year: params.get('year') ?? 'all',
+      subject: params.get('subject') ?? '전체',
+      page: params.get('page') ?? '1',
     };
+
     let currentPage = Math.max(1, parseInt(state.page) || 1);
-    const matches = (card: HTMLElement): boolean => {
-      if (state.year !== 'all' && card.dataset.year !== state.year) return false;
-      if (state.subject !== '전체' && card.dataset.subject !== state.subject) return false;
-      const q = state.q.trim().toLowerCase();
-      if (q && !(card.dataset.search ?? '').includes(q)) return false;
-      return true;
+    let lastTotalPages = TOTAL_PAGES_ALL;
+    let renderToken = 0;
+
+    type IndexItem = { id: string; p: number; y: number; s: string; q: string };
+    type IndexResponse = {
+      total: number;
+      pageSize: number;
+      totalPages: number;
+      items: IndexItem[];
     };
+    type PageResponse = { cards: string[] };
+
+    // 한 번에 너무 많은 카드 DOM을 메모리에 들고 있지 않도록 페이지 캐시를 제한합니다.
+    const pageCache = new Map<number, HTMLElement[]>();
+    const MAX_CACHED_PAGES = 10;
+    const rememberPage = (page: number, nodes: HTMLElement[]) => {
+      pageCache.set(page, nodes);
+      while (pageCache.size > MAX_CACHED_PAGES) {
+        for (const key of pageCache.keys()) {
+          if (key === page) continue;
+          pageCache.delete(key);
+          break;
+        }
+      }
+    };
+
+    // 서버가 렌더링한 첫 페이지 카드는 다시 내려받지 않고 그대로 재사용합니다.
+    const serverCards = Array.from(
+      grid?.querySelectorAll<HTMLElement>('[data-problem-card]') ?? []
+    );
+    if (serverCards.length > 0) pageCache.set(1, serverCards);
+
+    let indexPromise: Promise<IndexItem[]> | null = null;
+    const loadIndex = (): Promise<IndexItem[]> => {
+      if (!indexPromise) {
+        indexPromise = fetch('/api/problems/index.json', {
+          headers: { Accept: 'application/json' },
+        })
+          .then((response) => {
+            if (!response.ok) throw new Error(`index: ${response.status}`);
+            return response.json() as Promise<IndexResponse>;
+          })
+          .then((data) => data.items)
+          .catch((error) => {
+            indexPromise = null;
+            throw error;
+          });
+      }
+      return indexPromise;
+    };
+
+    const loadPage = async (page: number): Promise<HTMLElement[]> => {
+      const cached = pageCache.get(page);
+      if (cached) return cached;
+
+      const response = await fetch(`/api/problems/${page}.json`, {
+        headers: { Accept: 'application/json' },
+      });
+      if (!response.ok) throw new Error(`page ${page}: ${response.status}`);
+
+      const data = (await response.json()) as PageResponse;
+      const template = document.createElement('template');
+      template.innerHTML = data.cards.join('');
+      const nodes = Array.from(
+        template.content.querySelectorAll<HTMLElement>('[data-problem-card]')
+      );
+      rememberPage(page, nodes);
+      return nodes;
+    };
+
+    const hasFilters = (): boolean =>
+      state.q.trim() !== '' || state.year !== 'all' || state.subject !== '전체';
+
+    const filterItems = (items: IndexItem[]): IndexItem[] => {
+      const q = state.q.trim().toLowerCase();
+      return items.filter((item) => {
+        if (state.year !== 'all' && String(item.y) !== state.year) return false;
+        if (state.subject !== '전체' && item.s !== state.subject) return false;
+        if (q && !item.q.includes(q)) return false;
+        return true;
+      });
+    };
+
+    const syncUrl = () => {
+      const next = new URLSearchParams();
+      if (state.q) next.set('q', state.q);
+      if (state.year !== 'all') next.set('year', state.year);
+      if (state.subject !== '전체') next.set('subject', state.subject);
+      if (currentPage > 1) next.set('page', String(currentPage));
+      const query = next.toString();
+      history.replaceState(
+        null,
+        '',
+        query ? `${window.location.pathname}?${query}` : window.location.pathname
+      );
+    };
+
     const buildPagination = (totalPages: number) => {
       if (!paginationControls) return;
       paginationControls.innerHTML = '';
-      const makeBtn = (label: string, onClick: () => void, disabled = false, active = false, big = false) => {
+
+      const makeBtn = (
+        label: string,
+        onClick: () => void,
+        disabled = false,
+        active = false,
+        big = false
+      ) => {
         const btn = document.createElement('button');
         btn.type = 'button';
-        btn.className = `flex items-center justify-center rounded-xl font-bold transition-all shadow-sm ${big ? 'px-4 py-2.5 text-sm bg-indigo-600 text-white hover:bg-indigo-700 active:scale-95' : active ? 'px-3 py-2 text-sm bg-amber-400 text-slate-900 shadow-amber-200/50' : disabled ? 'px-3 py-2 text-sm bg-slate-100 text-slate-300 cursor-default' : 'px-3 py-2 text-sm bg-white border-2 border-slate-200 text-slate-700 hover:border-indigo-400 hover:text-indigo-700 active:scale-95'}`;
-        btn.textContent = label; btn.disabled = disabled; btn.addEventListener('click', onClick); paginationControls.appendChild(btn);
+        btn.className = `flex items-center justify-center rounded-xl font-bold transition-all shadow-sm ${
+          big
+            ? 'px-4 py-2.5 text-sm bg-indigo-600 text-white hover:bg-indigo-700 active:scale-95'
+            : active
+              ? 'px-3 py-2 text-sm bg-amber-400 text-slate-900 shadow-amber-200/50'
+              : disabled
+                ? 'px-3 py-2 text-sm bg-slate-100 text-slate-300 cursor-default'
+                : 'px-3 py-2 text-sm bg-white border-2 border-slate-200 text-slate-700 hover:border-indigo-400 hover:text-indigo-700 active:scale-95'
+        }`;
+        btn.textContent = label;
+        btn.disabled = disabled;
+        btn.addEventListener('click', onClick);
+        paginationControls.appendChild(btn);
       };
+
       makeBtn('◀◀ 처음', () => goPage(1), currentPage <= 1, false, true);
       makeBtn('◀ 이전', () => goPage(currentPage - 1), currentPage <= 1, false, false);
       for (let i = 1; i <= totalPages; i++) {
-        if (totalPages <= 7 || i === 1 || i === totalPages || (i >= currentPage - 1 && i <= currentPage + 1)) makeBtn(String(i), () => goPage(i), false, i === currentPage, false);
-        else if (i === currentPage - 2 || i === currentPage + 2) { const el = document.createElement('span'); el.className = 'px-1.5 py-2 text-sm text-slate-400 font-bold select-none'; el.textContent = '\u2026'; paginationControls.appendChild(el); }
+        if (
+          totalPages <= 7 ||
+          i === 1 ||
+          i === totalPages ||
+          (i >= currentPage - 1 && i <= currentPage + 1)
+        ) {
+          makeBtn(String(i), () => goPage(i), false, i === currentPage, false);
+        } else if (i === currentPage - 2 || i === currentPage + 2) {
+          const el = document.createElement('span');
+          el.className = 'px-1.5 py-2 text-sm text-slate-400 font-bold select-none';
+          el.textContent = '\u2026';
+          paginationControls.appendChild(el);
+        }
       }
       makeBtn('다음 ▶', () => goPage(currentPage + 1), currentPage >= totalPages, false, false);
       makeBtn('마지막 ▶▶', () => goPage(totalPages), currentPage >= totalPages, false, true);
     };
-    const goPage = (n: number) => {
-      const matched = cards.filter(matches);
-      const totalPages = Math.max(1, Math.ceil(matched.length / PAGE));
-      currentPage = Math.max(1, Math.min(n, totalPages));
-      state.page = String(currentPage);
-      history.replaceState(null, '', `?${new URLSearchParams({ ...state, page: state.page } as Record<string, string>).toString()}`);
-      render(); window.scrollTo({ top: 0, behavior: 'smooth' });
-    };
-    const render = () => {
-      const matched = cards.filter(matches);
-      const totalPages = Math.max(1, Math.ceil(matched.length / PAGE));
-      currentPage = Math.max(1, Math.min(currentPage, totalPages));
-      cards.forEach((card) => card.setAttribute('hidden', ''));
-      const start = (currentPage - 1) * PAGE;
-      const end = start + PAGE;
-      matched.slice(start, end).forEach((card) => card.removeAttribute('hidden'));
-      const visible = matched.length;
-      if (countEl) countEl.textContent = String(visible);
-      if (emptyState) emptyState.toggleAttribute('hidden', visible > 0);
-      if (paginationBar) paginationBar.toggleAttribute('hidden', visible === 0);
-      if (grid) grid.toggleAttribute('hidden', visible === 0);
-      if (curPageEl) curPageEl.textContent = String(currentPage);
-      if (totalPagesEl) totalPagesEl.textContent = String(totalPages);
-      buildPagination(totalPages);
-      filterButtons.forEach((btn) => btn.setAttribute('data-active', String(state[btn.dataset.filter ?? ''] === btn.dataset.value)));
-      const hasActive = state.q !== '' || state.year !== 'all' || state.subject !== '전체';
-      if (resetBar) resetBar.toggleAttribute('hidden', !hasActive);
+
+    const updateControls = (visibleCount: number) => {
+      filterButtons.forEach((btn) => {
+        btn.setAttribute(
+          'data-active',
+          String(state[btn.dataset.filter ?? ''] === btn.dataset.value)
+        );
+      });
+
+      if (resetBar) resetBar.toggleAttribute('hidden', !hasFilters());
       if (clearBtn) clearBtn.toggleAttribute('hidden', state.q === '');
       if (searchInput && searchInput.value !== state.q) searchInput.value = state.q;
+
       if (pageInfo) {
-        const rangeStart = visible === 0 ? 0 : start + 1;
-        const rangeEnd = Math.min(end, visible);
-        pageInfo.innerHTML = `페이지 <strong class="text-indigo-600 font-bold">${currentPage}</strong> / <strong>${totalPages}</strong> · <span class="text-slate-400 font-normal">(${rangeStart}-${rangeEnd} / ${visible})</span>`;
+        const start = visibleCount === 0 ? 0 : (currentPage - 1) * PAGE + 1;
+        const end = Math.min(currentPage * PAGE, visibleCount);
+        pageInfo.innerHTML = `페이지 <strong class="text-indigo-600 font-bold">${currentPage}</strong> / <strong>${lastTotalPages}</strong> · <span class="text-slate-400 font-normal">(${start}-${end} / ${visibleCount})</span>`;
       }
     };
-    searchInput?.addEventListener('input', () => { state.q = searchInput.value; currentPage = 1; render(); });
-    clearBtn?.addEventListener('click', () => { state.q = ''; currentPage = 1; render(); searchInput?.focus(); });
-    filterButtons.forEach((btn) => btn.addEventListener('click', () => { state[btn.dataset.filter ?? ''] = btn.dataset.value ?? ''; currentPage = 1; render(); }));
-    resetButtons.forEach((btn) => btn.addEventListener('click', () => { state.q = ''; state.year = 'all'; state.subject = '전체'; currentPage = 1; render(); }));
-    render();
+
+    const render = async () => {
+      const token = ++renderToken;
+      if (grid) {
+        grid.setAttribute('aria-busy', 'true');
+        grid.classList.add('opacity-60');
+      }
+
+      try {
+        let visibleCount: number;
+        let cardsToShow: HTMLElement[];
+
+        if (hasFilters()) {
+          const items = await loadIndex();
+          if (token !== renderToken) return;
+
+          const matched = filterItems(items);
+          visibleCount = matched.length;
+          lastTotalPages = Math.max(1, Math.ceil(visibleCount / PAGE));
+          currentPage = Math.max(1, Math.min(currentPage, lastTotalPages));
+
+          const start = (currentPage - 1) * PAGE;
+          const pageItems = matched.slice(start, start + PAGE);
+          const neededPages = Array.from(new Set(pageItems.map((item) => item.p)));
+
+          const pageCards = new Map<number, HTMLElement[]>();
+          await Promise.all(
+            neededPages.map(async (page) => {
+              pageCards.set(page, await loadPage(page));
+            })
+          );
+          if (token !== renderToken) return;
+
+          const byId = new Map<string, HTMLElement>();
+          for (const nodes of pageCards.values()) {
+            for (const node of nodes) {
+              const id = node.dataset.problemId;
+              if (id) byId.set(id, node);
+            }
+          }
+
+          cardsToShow = pageItems
+            .map((item) => byId.get(item.id))
+            .filter((node): node is HTMLElement => Boolean(node));
+        } else {
+          visibleCount = TOTAL;
+          lastTotalPages = TOTAL_PAGES_ALL;
+          currentPage = Math.max(1, Math.min(currentPage, lastTotalPages));
+          cardsToShow = await loadPage(currentPage);
+          if (token !== renderToken) return;
+        }
+
+        if (grid) {
+          grid.replaceChildren(...cardsToShow);
+          grid.toggleAttribute('hidden', visibleCount === 0);
+        }
+
+        if (countEl) countEl.textContent = String(visibleCount);
+        if (emptyState) emptyState.toggleAttribute('hidden', visibleCount > 0);
+        if (paginationBar) paginationBar.toggleAttribute('hidden', visibleCount === 0);
+        if (curPageEl) curPageEl.textContent = String(currentPage);
+        if (totalPagesEl) totalPagesEl.textContent = String(lastTotalPages);
+        buildPagination(lastTotalPages);
+        updateControls(visibleCount);
+      } catch (error) {
+        console.error('[problems] failed to render', error);
+        if (token === renderToken && grid) {
+          grid.removeAttribute('hidden');
+          const message = document.createElement('p');
+          message.className = 'col-span-full py-10 text-center text-sm text-slate-500';
+          message.textContent = '문항을 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.';
+          grid.replaceChildren(message);
+        }
+      } finally {
+        if (token === renderToken && grid) {
+          grid.removeAttribute('aria-busy');
+          grid.classList.remove('opacity-60');
+        }
+      }
+    };
+
+    const goPage = (page: number) => {
+      currentPage = Math.max(1, Math.min(page, lastTotalPages));
+      syncUrl();
+      void render();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
+    let searchTimer: number | undefined;
+    searchInput?.addEventListener('input', () => {
+      state.q = searchInput.value;
+      currentPage = 1;
+      window.clearTimeout(searchTimer);
+      searchTimer = window.setTimeout(() => {
+        syncUrl();
+        void render();
+      }, 180);
+    });
+
+    clearBtn?.addEventListener('click', () => {
+      state.q = '';
+      currentPage = 1;
+      if (searchInput) searchInput.value = '';
+      syncUrl();
+      void render();
+      searchInput?.focus();
+    });
+
+    filterButtons.forEach((btn) =>
+      btn.addEventListener('click', () => {
+        state[btn.dataset.filter ?? ''] = btn.dataset.value ?? '';
+        currentPage = 1;
+        syncUrl();
+        void render();
+      })
+    );
+
+    resetButtons.forEach((btn) =>
+      btn.addEventListener('click', () => {
+        state.q = '';
+        state.year = 'all';
+        state.subject = '전체';
+        currentPage = 1;
+        if (searchInput) searchInput.value = '';
+        syncUrl();
+        void render();
+      })
+    );
+
+    // 검색창/필터를 누르는 순간 인덱스를 미리 받아 첫 입력 지연을 줄입니다.
+    // (초기 로드에서는 받지 않아 Core Web Vitals 측정에 영향을 주지 않습니다.)
+    const prefetchIndex = () => {
+      void loadIndex().catch(() => {});
+    };
+    searchInput?.addEventListener('focus', prefetchIndex, { once: true });
+    searchInput?.addEventListener('pointerdown', prefetchIndex, { once: true });
+    root.addEventListener('pointerdown', (event) => {
+      const target = event.target as HTMLElement | null;
+      if (target?.closest('[data-filter], [data-filter-reset]')) prefetchIndex();
+    });
+
+    // URL에 페이지/필터가 있으면 첫 화면 카드를 잠시 숨겨 잘못된 페이지가 보이지 않게 합니다.
+    if (currentPage !== 1 || hasFilters()) {
+      if (grid) grid.setAttribute('hidden', '');
+    }
+
+    void render();
   }
 </script>

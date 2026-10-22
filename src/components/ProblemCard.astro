@@ -20,6 +20,8 @@ const difficulty = Math.max(0, Math.min(5, problem.difficulty));
 <a
   {...rest}
   href={href}
+  data-problem-card
+  data-problem-id={problem.id}
   class="bg-white border border-slate-200 hover:border-indigo-400 hover:shadow-md transition-all rounded-xl p-5 cursor-pointer flex flex-col justify-between group focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:outline-hidden"
   aria-label={`${problem.year}학년도 ${problem.problemNumber}번 문항 상세 보기`}
 >
