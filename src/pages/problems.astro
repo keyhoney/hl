@@ -206,12 +206,12 @@ const hasActiveFilters =
     const paginationBar = root.querySelector<HTMLElement>('[data-pagination-bar]');
     const params = new URLSearchParams(window.location.search);
     const state: Record<string, string> = {
-      q: params.get('q') ?? '', year: params.get('year') ?? 'all', subject: params.get('subject') ?? '\u5168\u4f53', page: params.get('page') ?? '1',
+      q: params.get('q') ?? '', year: params.get('year') ?? 'all', subject: params.get('subject') ?? '전체', page: params.get('page') ?? '1',
     };
     let currentPage = Math.max(1, parseInt(state.page) || 1);
     const matches = (card: HTMLElement): boolean => {
       if (state.year !== 'all' && card.dataset.year !== state.year) return false;
-      if (state.subject !== '\u5168\u4f53' && card.dataset.subject !== state.subject) return false;
+      if (state.subject !== '전체' && card.dataset.subject !== state.subject) return false;
       const q = state.q.trim().toLowerCase();
       if (q && !(card.dataset.search ?? '').includes(q)) return false;
       return true;
@@ -225,14 +225,14 @@ const hasActiveFilters =
         btn.className = `flex items-center justify-center rounded-xl font-bold transition-all shadow-sm ${big ? 'px-4 py-2.5 text-sm bg-indigo-600 text-white hover:bg-indigo-700 active:scale-95' : active ? 'px-3 py-2 text-sm bg-amber-400 text-slate-900 shadow-amber-200/50' : disabled ? 'px-3 py-2 text-sm bg-slate-100 text-slate-300 cursor-default' : 'px-3 py-2 text-sm bg-white border-2 border-slate-200 text-slate-700 hover:border-indigo-400 hover:text-indigo-700 active:scale-95'}`;
         btn.textContent = label; btn.disabled = disabled; btn.addEventListener('click', onClick); paginationControls.appendChild(btn);
       };
-      makeBtn('\u25c0\u25c0 \u59cb\u5934', () => goPage(1), currentPage <= 1, false, true);
-      makeBtn('\u25c0 \u6b64\u524d', () => goPage(currentPage - 1), currentPage <= 1, false, false);
+      makeBtn('◀◀ 처음', () => goPage(1), currentPage <= 1, false, true);
+      makeBtn('◀ 이전', () => goPage(currentPage - 1), currentPage <= 1, false, false);
       for (let i = 1; i <= totalPages; i++) {
         if (totalPages <= 7 || i === 1 || i === totalPages || (i >= currentPage - 1 && i <= currentPage + 1)) makeBtn(String(i), () => goPage(i), false, i === currentPage, false);
         else if (i === currentPage - 2 || i === currentPage + 2) { const el = document.createElement('span'); el.className = 'px-1.5 py-2 text-sm text-slate-400 font-bold select-none'; el.textContent = '\u2026'; paginationControls.appendChild(el); }
       }
-      makeBtn('\u4e0b\u884c \u25b6', () => goPage(currentPage + 1), currentPage >= totalPages, false, false);
-      makeBtn('\u672b\u5c3e \u25b6\u25b6', () => goPage(totalPages), currentPage >= totalPages, false, true);
+      makeBtn('다음 ▶', () => goPage(currentPage + 1), currentPage >= totalPages, false, false);
+      makeBtn('마지막 ▶▶', () => goPage(totalPages), currentPage >= totalPages, false, true);
     };
     const goPage = (n: number) => {
       const matched = cards.filter(matches);
@@ -259,20 +259,20 @@ const hasActiveFilters =
       if (totalPagesEl) totalPagesEl.textContent = String(totalPages);
       buildPagination(totalPages);
       filterButtons.forEach((btn) => btn.setAttribute('data-active', String(state[btn.dataset.filter ?? ''] === btn.dataset.value)));
-      const hasActive = state.q !== '' || state.year !== 'all' || state.subject !== '\u5168\u4f53';
+      const hasActive = state.q !== '' || state.year !== 'all' || state.subject !== '전체';
       if (resetBar) resetBar.toggleAttribute('hidden', !hasActive);
       if (clearBtn) clearBtn.toggleAttribute('hidden', state.q === '');
       if (searchInput && searchInput.value !== state.q) searchInput.value = state.q;
       if (pageInfo) {
         const rangeStart = visible === 0 ? 0 : start + 1;
         const rangeEnd = Math.min(end, visible);
-        pageInfo.innerHTML = `\u9875\u9762 <strong class="text-indigo-600 font-bold">${currentPage}</strong> / <strong>${totalPages}</strong> \u00b7 <span class="text-slate-400 font-normal">(${rangeStart}-${rangeEnd} / ${visible})</span>`;
+        pageInfo.innerHTML = `페이지 <strong class="text-indigo-600 font-bold">${currentPage}</strong> / <strong>${totalPages}</strong> · <span class="text-slate-400 font-normal">(${rangeStart}-${rangeEnd} / ${visible})</span>`;
       }
     };
     searchInput?.addEventListener('input', () => { state.q = searchInput.value; currentPage = 1; render(); });
     clearBtn?.addEventListener('click', () => { state.q = ''; currentPage = 1; render(); searchInput?.focus(); });
     filterButtons.forEach((btn) => btn.addEventListener('click', () => { state[btn.dataset.filter ?? ''] = btn.dataset.value ?? ''; currentPage = 1; render(); }));
-    resetButtons.forEach((btn) => btn.addEventListener('click', () => { state.q = ''; state.year = 'all'; state.subject = '\u5168\u4f53'; currentPage = 1; render(); }));
+    resetButtons.forEach((btn) => btn.addEventListener('click', () => { state.q = ''; state.year = 'all'; state.subject = '전체'; currentPage = 1; render(); }));
     render();
   }
 </script>
