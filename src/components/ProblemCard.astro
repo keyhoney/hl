@@ -29,10 +29,11 @@ const difficulty = Math.max(0, Math.min(5, problem.difficulty));
       <div class="min-w-0">
         <h3 class="flex flex-wrap items-baseline gap-x-1.5 text-xl font-extrabold tracking-tight text-slate-900 group-hover:text-indigo-700 transition-colors">
           <span>{problem.year}학년도</span>
+          <span>{examLabel}</span>
           <span class="text-indigo-600">{problem.problemNumber}번</span>
         </h3>
         <p class="mt-1 text-[11px] font-semibold text-slate-400 line-clamp-1">
-          {examLabel} · {problem.unitName} · {problem.concept}
+          {problem.unitName} · {problem.concept}
         </p>
       </div>
 
