@@ -22,6 +22,51 @@
   font-size: 1.05em;
 }
 
+/* Markdown (GFM) tables rendered from MDX */
+.mdx-table-wrap {
+  overflow-x: auto;
+  margin: 1rem 0;
+  border-radius: 0.5rem;
+}
+
+.mdx-table-wrap table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: center;
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+.mdx-table-wrap th,
+.mdx-table-wrap td {
+  border: 1px solid #cbd5e1;
+  padding: 0.5rem 0.75rem;
+  vertical-align: middle;
+}
+
+.mdx-table-wrap thead th {
+  background-color: #f1f5f9;
+  color: #334155;
+  font-weight: 700;
+}
+
+.mdx-table-wrap tbody tr:nth-child(even) {
+  background-color: #f8fafc;
+}
+
+.mdx-table-wrap tbody tr:hover {
+  background-color: #eef2ff;
+}
+
+.mdx-table-wrap .katex {
+  font-size: 1em;
+}
+
+.mdx-table-wrap .katex-display {
+  margin: 0 !important;
+  padding: 0;
+}
+
 /*
  * Interactive-state styles.
  * Astro ships almost no JavaScript, so tab/filter/selection state lives on
