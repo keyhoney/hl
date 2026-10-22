@@ -1,0 +1,66 @@
+# ============================================================
+# 웹 배포용 .gitignore
+# - 배포에 꼭 필요한 파일만 추적하고, 나머지는 모두 무시합니다.
+# - 배포 필요 파일:
+#     package.json, package-lock.json, astro.config.mjs,
+#     tsconfig.json, index.html, src/, public/, scripts/,
+#     metadata.json, .env.example, README.md
+#
+# ※ gitignore는 "마지막에 매칭된 규칙"이 이깁니다.
+#    무시 규칙(*) 뒤에 예외 규칙(!)을 두어야 합니다.
+# ============================================================
+
+# ── 1. 기본: 모든 파일 무시 ──
+*
+
+# ── 2. 배포에 꼭 필요한 파일만 예외 허용 ──
+!.gitignore
+!package.json
+!package-lock.json
+!astro.config.mjs
+!tsconfig.json
+!index.html
+!metadata.json
+!.env.example
+!README.md
+!src/
+!src/**
+!public/
+!public/**
+!scripts/
+!scripts/**
+
+# ── 3. 빌드 산출물 / 의존성 / 테스트 커버리지 ──
+.astro/
+dist/
+build/
+coverage/
+node_modules/
+
+# ── 4. 환경 변수 (예시 파일만 허용) ──
+.env
+.env.*
+!.env.example
+
+# ── 5. 로그 / 임시 파일 / OS 파일 ──
+*.log
+*.zip
+*.gz
+*.swp
+.DS_Store
+Thumbs.db
+tmp_check.mjs
+test-parse.mjs
+test-parse.mts
+parse-check.mjs
+dev.log
+run-docx2mdx.bat
+
+# ── 6. 문서 변환 도구 / 원본 문서 ──
+docx2mdx/
+*.xlsm
+*.xlsx
+
+# ── 7. 구 Vite 설정 (Astro 프로젝트에 불필요) ──
+vite.config.ts
+vite-env.d.ts
