@@ -1,13 +1,22 @@
-import { AstroContainer } from 'astro/container';
-import ProblemCard from '../../components/ProblemCard.astro';
-import { getProblems } from '../../data/problems';
-import type { APIRoute } from 'astro';
+import { experimental_AstroContainer as AstroContainer } from 'astro/container';
+import ProblemCard from '../../../components/ProblemCard.astro';
+import { getProblems } from '../../../data/problems';
+import type { APIRoute, GetStaticPaths } from 'astro';
 
 export const prerender = true;
 
+const PAGE = 12;
+
+export const getStaticPaths: GetStaticPaths = async () => {
+  const all = await getProblems();
+  const totalPages = Math.max(1, Math.ceil(all.length / PAGE));
+  return Array.from({ length: totalPages }, (_, i) => ({
+    params: { page: String(i + 1) },
+  }));
+};
+
 export const GET: APIRoute = async ({ params }) => {
   const page = Math.max(1, parseInt(params.page ?? '1') || 1);
-  const PAGE = 12;
   const all = await getProblems();
   const chunk = all.slice((page - 1) * PAGE, page * PAGE);
 
