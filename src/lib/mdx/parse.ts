@@ -15,24 +15,24 @@ import { stripMarkdown } from './render';
  *
  * - `## 문제`   : 문제 지문 (①~⑤ 선지는 별도 배열로 분리)
  * - `## 힌트`   : 여러 개 가능
- * - `## 풀이` / `## 풀이: 제목` / `## 실전` / `## 그래프 풀이` / `## 함정 포인트`
+ * - `## 풀이` / `## 풀이: 제목` / `## 스킬` / `## 그래프 풀이` / `## 함정 포인트`
  *   → 각각 독립된 해법으로 분리하고, 제목이 없으면 유형별 순번을 자동 부여
- * - `## 풀이 [실전 스킬]`, `## 풀이 2` 같은 레거시 표기도 인식
+ * - `## 풀이 [스킬]`, `## 풀이 2` 같은 레거시 표기도 인식
  */
 
 // ── 풀이 섹션 소제목 규칙 (원본 주석 그대로) ────────────────────────────────
 //  ## 풀이 / ## 풀이: 제목        → 정석 풀이 (standard)
-//  ## 실전 / ## 실전: 제목        → 실전 스킬 (shortcut)  ※ "## 실전 스킬" 도 동일
+//  ## 스킬 / ## 스킬: 제목        → 스킬 풀이 (shortcut)  ※ "## 스킬 풀이" 도 동일
 //  ## 그래프 풀이 → geometric, ## 함정 포인트 → pitfall
-//  ## 풀이 [실전] → shortcut
+//  ## 풀이 [스킬] → shortcut
 const SOLUTION_TYPE_RULES: { type: SolutionType; re: RegExp }[] = [
-  { type: 'shortcut', re: /실전|스킬|skill/i },
+  { type: 'shortcut', re: /스킬|skill/i },
   { type: 'geometric', re: /그래프|시각|svg|graph/i },
   { type: 'pitfall', re: /함정|오답|주의|pitfall/i },
 ];
 
 const SOLUTION_PREFIXES: { type: SolutionType; re: RegExp; label: string }[] = [
-  { type: 'shortcut', re: /^실전(?:\s*스킬)?$/, label: '실전 스킬' },
+  { type: 'shortcut', re: /^스킬(?:\s*풀이)?$/, label: '스킬 풀이' },
   { type: 'geometric', re: /^그래프\s*풀이$/, label: '그래프 풀이' },
   { type: 'pitfall', re: /^함정\s*포인트$/, label: '함정 포인트' },
   { type: 'standard', re: /^풀이$/, label: '정석 풀이' },
@@ -49,7 +49,7 @@ export function resolveSolutionType(tag: string | undefined): SolutionType {
   return 'standard';
 }
 
-/** "## 풀이 …" / "## 실전 스킬 …" 소제목 → { type, title } (제목은 비어 있을 수 있음) */
+/** "## 풀이 …" / "## 스킬 …" 소제목 → { type, title } (제목은 비어 있을 수 있음) */
 export function parseSolutionHeading(raw: string): {
   isSolution: boolean;
   type?: SolutionType;
@@ -57,7 +57,7 @@ export function parseSolutionHeading(raw: string): {
 } {
   const text = (raw || '').trim();
 
-  // 보조 문법: "## 풀이 [실전 스킬]" / "## 풀이 [그래프]" (대괄호 태그)
+  // 보조 문법: "## 풀이 [스킬]" / "## 풀이 [그래프]" (대괄호 태그)
   const bracket = text.match(/^풀이[ \t]*\[([^\]]+)\][ \t]*(?::[ \t]*([\s\S]*))?$/);
   if (bracket) {
     return {
@@ -69,7 +69,7 @@ export function parseSolutionHeading(raw: string): {
 
   // 레거시 "## 풀이 2" / "## 풀이 2: 제목" 도 인식하되, 번호는 무시
   const stripped = text.replace(
-    /^(풀이|실전(?:[ \t]*스킬)?|그래프[ \t]*풀이|함정[ \t]*포인트)[ \t]*\d+[ \t]*(?=$|:)/,
+    /^(풀이|스킬(?:[ \t]*풀이)?|그래프[ \t]*풀이|함정[ \t]*포인트)[ \t]*\d+[ \t]*(?=$|:)/,
     '$1'
   );
   const match = stripped.match(/^([^:]+?)[ \t]*(?::[ \t]*([\s\S]*))?$/);

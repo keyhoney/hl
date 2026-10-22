@@ -10,7 +10,7 @@ export type AnswerType = 'mcq' | 'short';
 /**
  * 해법 유형.
  * - standard  : `## 풀이`
- * - shortcut  : `## 실전`, `## 실전 스킬`, `## 풀이 [실전]`
+ * - shortcut  : `## 스킬`, `## 스킬 풀이`, `## 풀이 [스킬]`
  * - geometric : `## 그래프 풀이`
  * - pitfall   : `## 함정 포인트`
  */

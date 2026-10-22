@@ -20,7 +20,7 @@ const solutionStepSchema = z.object({
 
 /**
  * 해법 하나. 같은 `type`을 여러 번 쓸 수 있습니다.
- * 예) standard 2개 + shortcut 3개 (정석 풀이 ①·② / 실전 숏컷 ①·②·③ 자동 번호 부여)
+ * 예) standard 2개 + shortcut 3개 (정석 풀이 ①·② / 스킬 풀이 ①·②·③ 자동 번호 부여)
  * 표시용 라벨은 frontmatter에 쓰지 않으며 UI가 `type`과 등장 순서로 생성합니다.
  */
 const solutionSchema = z.object({

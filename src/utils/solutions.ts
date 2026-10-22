@@ -7,7 +7,7 @@ import type { Solution, SolutionType } from '../types/mathProblem';
  * 같은 유형이 여러 번 나오면 등장 순서대로 ①, ② 번호를 자동 부여합니다.
  */
 
-/** 화면에 노출되는 유형 순서 (정석 → 실전 → 그래프 → 함정) */
+/** 화면에 노출되는 유형 순서 (정석 → 스킬 → 그래프 → 함정) */
 export const SOLUTION_TYPE_ORDER: readonly SolutionType[] = [
   'standard',
   'shortcut',
@@ -18,7 +18,7 @@ export const SOLUTION_TYPE_ORDER: readonly SolutionType[] = [
 /** 유형별 정식 명칭 */
 export const SOLUTION_TYPE_LABELS: Record<SolutionType, string> = {
   standard: '정석 풀이',
-  shortcut: '실전 풀이',
+  shortcut: '스킬 풀이',
   geometric: '그래프 풀이',
   pitfall: '함정 포인트',
 };
@@ -26,7 +26,7 @@ export const SOLUTION_TYPE_LABELS: Record<SolutionType, string> = {
 /** 유형별 축약 명칭 */
 export const SOLUTION_TYPE_SHORT_LABELS: Record<SolutionType, string> = {
   standard: '정석',
-  shortcut: '실전',
+  shortcut: '스킬',
   geometric: '그래프',
   pitfall: '함정',
 };

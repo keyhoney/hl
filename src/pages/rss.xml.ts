@@ -4,7 +4,7 @@ import type { Problem } from '../types/mathProblem';
 
 const FEED_TITLE = 'HowLearn | 수능 수학 4점 기출 해설';
 const FEED_DESCRIPTION =
-  '수능 수학 4점 킬러·준킬러 문항의 정석 풀이, 실전 숏컷, 단계별 힌트를 제공하는 HowLearn의 문항 피드입니다.';
+  '수능 수학 4점 킬러·준킬러 문항의 정석 풀이, 스킬 숏컷, 단계별 힌트를 제공하는 HowLearn의 문항 피드입니다.';
 
 function escapeXml(value: string): string {
   return value

@@ -1,6 +1,6 @@
 {
   "name": "HowLearn - 수능 수학 다각도 해법",
-  "description": "한국 수능 수학 4점 킬러·준킬러 문항에 대해 정석 풀이, 실전 숏컷, 기하적 직관 등 다각도 해법과 분석을 제공하는 교육 플랫폼",
+  "description": "한국 수능 수학 4점 킬러·준킬러 문항에 대해 정석 풀이, 스킬 숏컷, 기하적 직관 등 다각도 해법과 분석을 제공하는 교육 플랫폼",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

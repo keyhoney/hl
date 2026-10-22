@@ -45,7 +45,7 @@ solutions:
         mathLatex: |-
           f(5) = (5+1)(5-3)(5-1) = 6 \times 2 \times 4 = 48
   - type: shortcut
-    title: 시험장 실전 숏컷 (사차함수 3:1 비율 관계 & 대칭성)
+    title: 시험장 스킬 숏컷 (사차함수 3:1 비율 관계 & 대칭성)
     summary: 사차함수 삼중접선의 3:1 비율 관계를 활용하여 수식을 최소화하고 3분 안에 답을 도출하는 실전적 해법
     calculationLoad: 소 (매우 적음)
     difficultyRating: 3.5

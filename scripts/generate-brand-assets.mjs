@@ -80,7 +80,7 @@ const ogImageSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height=
   <text x="72" y="278" font-family="Noto Sans KR, Malgun Gothic, sans-serif" font-size="56" font-weight="800" letter-spacing="-2" fill="#ffffff">한 문제를,</text>
   <text x="72" y="346" font-family="Noto Sans KR, Malgun Gothic, sans-serif" font-size="56" font-weight="800" letter-spacing="-2" fill="#ffffff">여러 관점으로.</text>
 
-  <text x="72" y="410" font-family="Noto Sans KR, Malgun Gothic, sans-serif" font-size="24" font-weight="500" letter-spacing="-0.5" fill="#cbd5e1">정석 풀이 · 실전 풀이 · 단계별 힌트</text>
+  <text x="72" y="410" font-family="Noto Sans KR, Malgun Gothic, sans-serif" font-size="24" font-weight="500" letter-spacing="-0.5" fill="#cbd5e1">정석 풀이 · 스킬 풀이 · 단계별 힌트</text>
 
   <g font-family="Noto Sans KR, Malgun Gothic, sans-serif" font-size="16" font-weight="700">
     <rect x="72" y="462" width="142" height="42" rx="21" fill="#ffffff" fill-opacity="0.07" stroke="#ffffff" stroke-opacity="0.12"/>

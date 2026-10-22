@@ -261,7 +261,7 @@ export function renderProblemOgSvg(problem: Problem): string {
   <!-- 하단 -->
   <path d="M72 930H1128" stroke="#ffffff" stroke-opacity="0.1"/>
   <circle cx="78" cy="978" r="5" fill="${accent.main}"/>
-  <text x="96" y="988" font-family="${FONT}" font-size="27" font-weight="600" letter-spacing="-0.5" fill="#e2e8f0">정석부터 실전까지, 한 문항을 여러 관점으로.</text>
+  <text x="96" y="988" font-family="${FONT}" font-size="27" font-weight="600" letter-spacing="-0.5" fill="#e2e8f0">정석부터 스킬까지, 한 문항을 여러 관점으로.</text>
   <text x="72" y="1102" font-family="${FONT}" font-size="22" font-weight="700" letter-spacing="0.5" fill="#94a3b8">howlearn.kr</text>
   <text x="1128" y="1102" font-family="${FONT}" font-size="17" font-weight="600" text-anchor="end" fill="#64748b">단계별 힌트 · 상세 해설</text>
 </svg>`;

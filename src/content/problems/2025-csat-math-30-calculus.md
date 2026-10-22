@@ -16,7 +16,7 @@ keyInsight: |-
   좌변을 $H(y) = y^3 + 2y$로 치환하면 $H(f(x)) = \int_0^x (1+\cos^2 t)dt$입니다. $H'(y) = 3y^2+2 > 0$이므로 $H$는 순단조증가 함수이며, $g(x)$의 정적분은 역함수 사각형 면적 공식 $\int_0^1 g(x)dx = 1 \cdot f^{-1}(1) - \int_0^{f^{-1}(1)} f(t)dt$ 혹은 $x = H(y)$의 치환적분으로 직접 계산됩니다.
 solutions:
   - type: shortcut
-    title: 실전 숏컷 풀이 (역함수 사각형 면적 공식 & 직접 치환)
+    title: 스킬 숏컷 풀이 (역함수 사각형 면적 공식 & 직접 치환)
     summary: '역함수를 직접 구하지 않고 $x = g(y)$를 $y=f(x)$의 치환적분 또는 기하학적 직사각형 면적 차이로 즉시 변환'
     calculationLoad: 소 (매우 적음)
     difficultyRating: 3.5
