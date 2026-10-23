@@ -7,6 +7,7 @@
  *   npm run indexnow -- --live       # 배포된 https://howlearn.kr/sitemap.xml 기준으로 제출
  *   npm run indexnow -- --dry-run    # 실제 제출 없이 대상 URL만 확인
  *   npm run indexnow -- --check      # 키 파일 배포 여부만 확인
+ *   npm run indexnow -- --url-file=urls.txt    # 파일에 담긴 URL만 제출
  *   npm run indexnow -- https://howlearn.kr/problem/20261101/ ...   # 특정 URL만 제출
  *
  * 키 파일(public/<key>.txt)은 반드시 먼저 배포되어 있어야 합니다.
@@ -26,6 +27,21 @@ const extraUrls = args.filter((arg) => !arg.startsWith('--'));
 const dryRun = flags.has('--dry-run');
 const useLive = flags.has('--live');
 const checkOnly = flags.has('--check');
+
+const urlFileArg = args.find((arg) => arg.startsWith('--url-file='));
+let fileUrls = [];
+if (urlFileArg) {
+  const urlFile = urlFileArg.slice('--url-file='.length);
+  if (!urlFile || !fs.existsSync(urlFile)) {
+    console.error(`\n[ERROR] URL 목록 파일을 찾지 못했습니다: ${urlFile}\n`);
+    process.exit(1);
+  }
+  fileUrls = fs
+    .readFileSync(urlFile, 'utf8')
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter(Boolean);
+}
 
 const log = (message) => console.log(message);
 
@@ -130,8 +146,8 @@ async function main() {
   log('\n[2/3] 제출 URL 수집...');
   let urls;
   try {
-    if (extraUrls.length > 0) {
-      urls = extraUrls;
+    if (fileUrls.length > 0 || extraUrls.length > 0) {
+      urls = [...fileUrls, ...extraUrls];
     } else if (useLive) {
       urls = await readLiveSitemap(site);
     } else {

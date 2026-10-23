@@ -1,0 +1,101 @@
+name: IndexNow
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - 'src/content/problems/**'
+  workflow_dispatch:
+    inputs:
+      urls:
+        description: '직접 제출할 URL (공백 또는 줄바꿈 구분)'
+        required: false
+        default: ''
+      full:
+        description: '사이트 전체 URL 제출 (초기 색인·대규모 개편용)'
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: indexnow-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  submit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+
+      - name: 변경된 문항 URL 계산
+        id: collect
+        shell: bash
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          BEFORE_SHA: ${{ github.event.before }}
+          AFTER_SHA: ${{ github.sha }}
+          INPUT_URLS: ${{ github.event.inputs.urls }}
+          INPUT_FULL: ${{ github.event.inputs.full }}
+        run: |
+          set -euo pipefail
+          : > urls.txt
+
+          if [ "$EVENT_NAME" = "workflow_dispatch" ]; then
+            if [ "$INPUT_FULL" = "true" ]; then
+              echo "mode=full" >> "$GITHUB_OUTPUT"
+            else
+              echo "mode=list" >> "$GITHUB_OUTPUT"
+              printf '%s\n' "$INPUT_URLS" | tr -s '[:space:]' '\n' | sed '/^$/d' >> urls.txt
+            fi
+          else
+            echo "mode=list" >> "$GITHUB_OUTPUT"
+            BEFORE="$BEFORE_SHA"
+
+            # force push·새 브랜치·첫 커밋이면 직전 커밋을 기준으로 사용
+            if [ -z "$BEFORE" ] ||
+               [ "$BEFORE" = "0000000000000000000000000000000000000000" ] ||
+               ! git cat-file -e "${BEFORE}^{commit}" 2>/dev/null; then
+              BEFORE="$(git rev-parse HEAD^ 2>/dev/null || true)"
+            fi
+
+            if [ -n "$BEFORE" ]; then
+              node scripts/indexnow-changed.mjs "$BEFORE" "$AFTER_SHA" --hub >> urls.txt
+            else
+              echo "이전 커밋이 없어 변경 문항 감지를 건너뜁니다." >&2
+            fi
+          fi
+
+          if [ -s urls.txt ]; then
+            sort -u urls.txt -o urls.txt
+          fi
+
+          COUNT=$(grep -c . urls.txt || true)
+          echo "count=$COUNT" >> "$GITHUB_OUTPUT"
+          echo "제출 대상 URL: ${COUNT}개"
+          cat urls.txt
+
+      - name: 배포 완료 대기
+        if: steps.collect.outputs.mode == 'full' || steps.collect.outputs.count != '0'
+        env:
+          DEPLOY_TIMEOUT_MS: '1500000'
+        run: node scripts/wait-for-deploy.mjs "${{ github.sha }}"
+
+      - name: IndexNow 제출 (변경 URL)
+        if: steps.collect.outputs.mode == 'list' && steps.collect.outputs.count != '0'
+        run: node scripts/indexnow.mjs --url-file=urls.txt
+
+      - name: IndexNow 제출 (전체)
+        if: steps.collect.outputs.mode == 'full'
+        run: node scripts/indexnow.mjs --live
