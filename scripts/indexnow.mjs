@@ -97,7 +97,7 @@ function readBuiltSitemap() {
 
 async function readLiveSitemap(site) {
   const sitemapUrl = new URL('/sitemap.xml', site).href;
-  const response = await fetch(sitemapUrl);
+  const response = await fetch(sitemapUrl, { signal: AbortSignal.timeout(20_000) });
   if (!response.ok) die(`라이브 sitemap 요청 실패 (HTTP ${response.status}): ${sitemapUrl}`);
   return extractUrls(await response.text());
 }
@@ -122,7 +122,10 @@ async function main() {
     log('\n[1/3] 키 파일 배포 확인...');
     let response;
     try {
-      response = await fetch(keyLocation, { headers: { 'cache-control': 'no-cache' } });
+      response = await fetch(keyLocation, {
+        headers: { 'cache-control': 'no-cache' },
+        signal: AbortSignal.timeout(20_000),
+      });
     } catch (error) {
       die(`키 파일에 접속할 수 없습니다: ${error.message}`);
     }
@@ -197,6 +200,7 @@ async function main() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json; charset=utf-8' },
         body: JSON.stringify({ host, key, keyLocation, urlList: batch }),
+        signal: AbortSignal.timeout(60_000),
       });
     } catch (error) {
       die(`IndexNow 요청 실패: ${error.message}`);
