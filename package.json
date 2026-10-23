@@ -11,7 +11,11 @@
     "build": "astro build",
     "preview": "astro preview",
     "check": "tsc --noEmit",
-    "clean": "rm -rf dist .astro"
+    "clean": "rm -rf dist .astro",
+    "indexnow": "node scripts/indexnow.mjs",
+    "indexnow:live": "node scripts/indexnow.mjs --live",
+    "indexnow:dry": "node scripts/indexnow.mjs --dry-run",
+    "indexnow:check": "node scripts/indexnow.mjs --check"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.3.3",
