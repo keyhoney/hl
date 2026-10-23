@@ -42,6 +42,10 @@ npm run dev      # http://localhost:3000 개발 서버
 | `npm run build` | `dist/`에 정적 사이트 빌드 |
 | `npm run preview` | 빌드 결과물 미리보기 |
 | `npm run check` | TypeScript 타입 검사 (`tsc --noEmit`) |
+| `npm run indexnow` | 빌드된 `dist/sitemap.xml` 기준 전체 URL을 IndexNow로 제출 |
+| `npm run indexnow:live` | 배포된 `/sitemap.xml` 기준으로 제출 |
+| `npm run indexnow:dry` | 실제 제출 없이 대상 URL만 확인 |
+| `npm run indexnow:check` | IndexNow 키 파일 배포 여부만 확인 |
 
 ## 라우팅
 
@@ -116,3 +120,14 @@ src/content/problems/_metadata.json
 - MDX 구획과 수식은 `src/lib/mdx/parse.ts`에서 빌드 시 파싱·렌더링됩니다.
 
 새 문항을 추가하거나 메타데이터를 수정한 뒤 `npm run build`를 실행하면 목록·상세·검색 인덱스·sitemap에 반영됩니다. 사이트 도메인은 `astro.config.mjs`의 `site` 설정을 배포 주소와 일치시켜야 합니다.
+
+## 검색엔진 색인 (IndexNow)
+
+`master` 브랜치에 `src/content/problems/**` 변경이 push되면 `.github/workflows/indexnow.yml`이 **변경된 문항 URL만** 골라 IndexNow(Bing·네이버 등)로 자동 제출합니다.
+
+- 추가·수정된 문항뿐 아니라 **삭제·이름 변경된 문항의 기존 URL**도 함께 제출합니다.
+- 문항이 바뀌면 목록 페이지(`/`, `/problems/`)도 제출 대상에 포함됩니다.
+- GitHub Actions 화면의 **Run workflow**에서 URL을 직접 넣거나 전체 문항을 제출할 수 있습니다.
+- 전체 제출은 로컬에서 `npm run indexnow`(빌드 결과 기준)를 사용하는 편이 빠릅니다.
+
+> Cloudflare가 GitHub Actions 러너 IP의 사이트 요청을 **403**으로 차단합니다. 그래서 워크플로는 배포 완료 폴링과 키 파일 라이브 확인을 생략하고, 고정 5분 대기 후 제출합니다. `public/<key>.txt` 키 파일은 삭제하지 마세요. 배포된 커밋은 `/api/deploy.json`에서 확인할 수 있고, 로컬에서는 `node scripts/wait-for-deploy.mjs <커밋SHA>`로 배포 완료를 기다릴 수 있습니다.

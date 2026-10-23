@@ -5,7 +5,6 @@ on:
     branches: [master]
     paths:
       - 'src/content/problems/**'
-      - '.github/workflows/indexnow.yml'
   workflow_dispatch:
     inputs:
       urls:
@@ -13,7 +12,7 @@ on:
         required: false
         default: ''
       full:
-        description: '사이트 전체 URL 제출 (초기 색인·대규모 개편용)'
+        description: '전체 문항 URL 제출 (초기 색인·대규모 개편용)'
         type: boolean
         default: false
 
@@ -96,8 +95,3 @@ jobs:
       - name: IndexNow 제출
         if: steps.collect.outputs.count != '0'
         run: node scripts/indexnow.mjs --url-file=urls.txt --skip-key-check
-
-      # 임시 스모크 테스트: 러너에서 api.indexnow.org 로 제출이 되는지 1개 URL로 확인
-      - name: 스모크 테스트 (임시)
-        if: github.event_name == 'push' && steps.collect.outputs.count == '0'
-        run: node scripts/indexnow.mjs --skip-key-check https://howlearn.kr/problem/20220601/
