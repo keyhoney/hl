@@ -5,6 +5,7 @@ on:
     branches: [master]
     paths:
       - 'src/content/problems/**'
+      - '.github/workflows/indexnow.yml'
   workflow_dispatch:
     inputs:
       urls:
@@ -26,7 +27,7 @@ concurrency:
 jobs:
   submit:
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 30
 
     steps:
       - name: Checkout
@@ -39,7 +40,7 @@ jobs:
         with:
           node-version-file: .nvmrc
 
-      - name: 변경된 문항 URL 계산
+      - name: 제출할 URL 계산
         id: collect
         shell: bash
         env:
@@ -54,13 +55,11 @@ jobs:
 
           if [ "$EVENT_NAME" = "workflow_dispatch" ]; then
             if [ "$INPUT_FULL" = "true" ]; then
-              echo "mode=full" >> "$GITHUB_OUTPUT"
+              node scripts/indexnow-changed.mjs --all --hub >> urls.txt
             else
-              echo "mode=list" >> "$GITHUB_OUTPUT"
               printf '%s\n' "$INPUT_URLS" | tr -s '[:space:]' '\n' | sed '/^$/d' >> urls.txt
             fi
           else
-            echo "mode=list" >> "$GITHUB_OUTPUT"
             BEFORE="$BEFORE_SHA"
 
             # force push·새 브랜치·첫 커밋이면 직전 커밋을 기준으로 사용
@@ -86,16 +85,19 @@ jobs:
           echo "제출 대상 URL: ${COUNT}개"
           cat urls.txt
 
-      - name: 배포 완료 대기
-        if: steps.collect.outputs.mode == 'full' || steps.collect.outputs.count != '0'
-        env:
-          DEPLOY_TIMEOUT_MS: '1500000'
-        run: node scripts/wait-for-deploy.mjs "${{ github.sha }}"
+      # Cloudflare가 GitHub Actions 러너 IP에는 403을 반환해 /api/deploy.json 폴링이 불가능합니다.
+      # Cloudflare Pages 빌드(약 2분) + 배포 여유를 고려해 고정으로 대기합니다.
+      - name: 배포 반영 대기
+        if: steps.collect.outputs.count != '0'
+        run: sleep 300
 
-      - name: IndexNow 제출 (변경 URL)
-        if: steps.collect.outputs.mode == 'list' && steps.collect.outputs.count != '0'
-        run: node scripts/indexnow.mjs --url-file=urls.txt
+      # 러너에서는 사이트 키 파일을 확인할 수 없어(Cloudflare 403) 생략합니다.
+      # 키 파일은 public/<key>.txt 로 항상 배포되며 IndexNow가 직접 검증합니다.
+      - name: IndexNow 제출
+        if: steps.collect.outputs.count != '0'
+        run: node scripts/indexnow.mjs --url-file=urls.txt --skip-key-check
 
-      - name: IndexNow 제출 (전체)
-        if: steps.collect.outputs.mode == 'full'
-        run: node scripts/indexnow.mjs --live
+      # 임시 스모크 테스트: 러너에서 api.indexnow.org 로 제출이 되는지 1개 URL로 확인
+      - name: 스모크 테스트 (임시)
+        if: github.event_name == 'push' && steps.collect.outputs.count == '0'
+        run: node scripts/indexnow.mjs --skip-key-check https://howlearn.kr/problem/20220601/

@@ -8,6 +8,7 @@
  *   npm run indexnow -- --dry-run    # 실제 제출 없이 대상 URL만 확인
  *   npm run indexnow -- --check      # 키 파일 배포 여부만 확인
  *   npm run indexnow -- --url-file=urls.txt    # 파일에 담긴 URL만 제출
+ *   npm run indexnow -- --skip-key-check       # 키 파일 라이브 확인 생략 (CI용)
  *   npm run indexnow -- https://howlearn.kr/problem/20261101/ ...   # 특정 URL만 제출
  *
  * 키 파일(public/<key>.txt)은 반드시 먼저 배포되어 있어야 합니다.
@@ -27,6 +28,7 @@ const extraUrls = args.filter((arg) => !arg.startsWith('--'));
 const dryRun = flags.has('--dry-run');
 const useLive = flags.has('--live');
 const checkOnly = flags.has('--check');
+const skipKeyCheck = flags.has('--skip-key-check');
 
 const urlFileArg = args.find((arg) => arg.startsWith('--url-file='));
 let fileUrls = [];
@@ -118,7 +120,10 @@ async function main() {
   log(`키 위치   : ${keyLocation}`);
 
   // 1) 키 파일이 실제로 배포되었는지 확인
-  if (!dryRun) {
+  if (skipKeyCheck && !dryRun) {
+    log('\n[1/3] 키 파일 배포 확인...');
+    log('        건너뜀 (--skip-key-check)');
+  } else if (!dryRun) {
     log('\n[1/3] 키 파일 배포 확인...');
     let response;
     try {

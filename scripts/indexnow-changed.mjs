@@ -1,14 +1,16 @@
 #!/usr/bin/env node
 /**
- * 두 커밋 사이에서 변경된 문항의 URL을 계산합니다.
+ * IndexNow에 제출할 문항 URL을 계산합니다.
  *
  * 사용법
  *   node scripts/indexnow-changed.mjs <base-sha> [head-sha] [--hub]
+ *   node scripts/indexnow-changed.mjs --all [--hub]
  *
  * - `src/content/problems/*.mdx` 추가/수정/삭제/이름변경을 감지합니다.
  *   (문항 id는 파일명이며, `_metadata.json`의 키와 같습니다.)
  * - `_metadata.json`에서 값이 바뀐 문항도 포함합니다.
  * - `--hub` 를 주면 목록 페이지(`/`, `/problems/`)도 함께 출력합니다.
+ * - `--all` 은 전체 문항 URL을 출력합니다(초기 색인·대규모 개편용).
  *
  * stdout에는 URL만 한 줄에 하나씩 출력하고, 안내 메시지는 stderr로 보냅니다.
  */
@@ -25,12 +27,16 @@ const flags = new Set(rawArgs.filter((arg) => arg.startsWith('--')));
 const positional = rawArgs.filter((arg) => !arg.startsWith('--'));
 const [base, head = 'HEAD'] = positional;
 
-if (!base) {
-  console.error('사용법: node scripts/indexnow-changed.mjs <base-sha> [head-sha] [--hub]');
+const all = flags.has('--all');
+const includeHub = flags.has('--hub');
+
+if (!all && !base) {
+  console.error(
+    '사용법: node scripts/indexnow-changed.mjs <base-sha> [head-sha] [--hub] | --all [--hub]'
+  );
   process.exit(1);
 }
 
-const includeHub = flags.has('--hub');
 const log = (message) => console.error(message);
 
 function git(args) {
@@ -78,7 +84,15 @@ function addProblemId(ids, filePath) {
   ids.add(path.posix.basename(filePath, '.mdx'));
 }
 
-function main() {
+function collectAllIds() {
+  const ids = new Set();
+  for (const name of fs.readdirSync(CONTENT_DIR)) {
+    if (name.endsWith('.mdx')) ids.add(path.posix.basename(name, '.mdx'));
+  }
+  return ids;
+}
+
+function collectChangedIds() {
   let diffOutput;
   try {
     diffOutput = git([
@@ -122,7 +136,13 @@ function main() {
     }
   }
 
+  return ids;
+}
+
+function main() {
   const origin = readSiteOrigin();
+  const ids = all ? collectAllIds() : collectChangedIds();
+
   const urls = [...ids]
     .sort()
     .map((id) => `${origin}/problem/${encodeURIComponent(id)}/`);
@@ -131,7 +151,12 @@ function main() {
     urls.push(`${origin}/`, `${origin}/problems/`);
   }
 
-  log(`변경 문항 ${ids.size}개 (${base.slice(0, 7)}..${head.slice(0, 7)})`);
+  if (all) {
+    log(`전체 문항 ${ids.size}개`);
+  } else {
+    log(`변경 문항 ${ids.size}개 (${base.slice(0, 7)}..${head.slice(0, 7)})`);
+  }
+
   if (urls.length > 0) {
     process.stdout.write(`${urls.join('\n')}\n`);
   }
